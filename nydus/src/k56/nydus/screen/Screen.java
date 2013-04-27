@@ -2,6 +2,7 @@ package k56.nydus.screen;
 
 import k56.nydus.core.Action;
 import k56.nydus.core.Engine;
+import k56.nydus.core.ShootingValue;
 import k56.nydus.ui.ColorTable;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -41,6 +42,8 @@ public class Screen implements ApplicationListener, InputProcessor {
 	private ColorTable[] pallette;
 	private int selectedColor;
 	
+	private boolean touching;
+	
 
 	@Override
 	public void create() {
@@ -54,7 +57,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 
 		stage = new Stage(200, 200, true);
 		loadUI();
-		
+		engine.setColor(pallette[0].getShootingValue());
 		Gdx.input.setInputProcessor(new InputMultiplexer(this));
 		
 		camera.position.x = engine.getWidth()*0.5f;
@@ -66,9 +69,9 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		pallette = new ColorTable[3];
 		// Load UI
-		pallette[0] = new ColorTable(10, 10, region, Color.RED);
-		pallette[1] = new ColorTable(10, 10, region, Color.GREEN);
-		pallette[2] = new ColorTable(10, 10, region, Color.BLUE);
+		pallette[0] = new ColorTable(10, 10, region, ShootingValue.RED);
+		pallette[1] = new ColorTable(10, 10, region, ShootingValue.GREEN);
+		pallette[2] = new ColorTable(10, 10, region, ShootingValue.BLUE);
 		
 		Table table = new Table();
 		table.defaults().pad(5);
@@ -114,6 +117,10 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		panY *= 0.9f;
 		panX *= 0.9f;
+		
+		if(touching) {
+			engine.clicked(mouse.x, mouse.y, Action.ADD);
+		}
 	}
 
 	@Override
@@ -165,6 +172,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 			else pallette[j].deselect();
 		}
 		
+		engine.setColor(pallette[selectedColor].getShootingValue());
 	}
 
 	@Override
@@ -184,14 +192,14 @@ public class Screen implements ApplicationListener, InputProcessor {
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		mouse.set(screenX, screenY, 0);
 		camera.unproject(mouse);
-		engine.clicked(mouse.x, mouse.y, Action.ADD);
-		
+
+		touching = true;
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
+		touching = false;
 		return false;
 	}
 
