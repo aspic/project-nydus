@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 
 public class Engine {
@@ -17,21 +18,46 @@ public class Engine {
 	
 	//Value that color is changes when hit by the player.
 	private float changeVal;
-	private Color color; //Will be used to add to the pixel color.
+	private Color deltaColor; //Will be used to add to the pixel color.
 	
 	private Texture texture;
 
 	
 	public Engine( Camera camera ){
 		pixelList = new Array<Pixel>();
-		generateLevel();
 		texture = new Texture(Gdx.files.internal("assets/test.png"));
+		generateLevel();
 	}
 
 	private void generateLevel(){
 		//Generate a level here.
-		for (int i = 0; i < level.getNumberOfPixels(); i++) {
-			pixelList.add(new Pixel());
+		this.level = new Level(10, 10, new TextureRegion(texture));
+		for (int i = 0; i < level.getWidth()-5; i+=5) {
+			for (int j = 0; j < level.getHeight(); j++) {
+				placePixel(i, j);
+			}
+		}
+		
+//		double generatePixelThreshold = 1 - (double)level.getNumberOfPixels()/(double)(level.getHeight()*level.getWidth());
+//		for (int i = 0; i < level.getNumberOfPixels(); i++) {
+//			double generate = MathUtils.random(0, 1);
+//			if(generate > generatePixelThreshold){
+//				for()
+//				float tempXPos, tempYPos;
+//				tempXPos = (float) (Math.random() % (float) level.getWidth());
+//				tempYPos = (float) (Math.random() % (float) level.getHeight());
+//				this.pixelList.add(new Pixel(tempXPos, tempYPos));
+//			}
+//		}
+	}
+	
+	private void placePixel(float x, float y){
+		float threshold = 0.5f;
+		for (int i = 0; i < 5; i++) {
+			float generate = MathUtils.random();
+			if(generate> threshold){
+				pixelList.add(new Pixel(x+i,y+i, new TextureRegion(texture)));				
+			}
 		}
 	}
 	
@@ -40,18 +66,31 @@ public class Engine {
 	 */
 	public void clicked(float x, float y, Action action){
 		//TODO: Check if in pixel. Switch case on action to see what method to call from Pixel.
+		for (int i = 0; i < pixelList.size; i++) {
+			Pixel tempPixel = pixelList.get(i);
+			if (tempPixel.insidePixel(x, y)){
+				switch(action){
+				case ADD:
+					pixelList.get(i).addColor(this.deltaColor);
+					break;
+				case SUB:
+					pixelList.get(i).subColor(this.deltaColor);
+					break;
+				}
+			}
+		}
 	}
 	
 	public void setColor(ShootingValue color){
 		switch(color){
 		case RED:
-			this.color = new Color(changeVal, 0, 0, 1);
+			this.deltaColor = new Color(changeVal, 0, 0, 1);
 			break;
 		case GREEN:
-			this.color = new Color( 0, changeVal, 0, 1);
+			this.deltaColor = new Color( 0, changeVal, 0, 1);
 			break;
 		case BLUE:
-			this.color = new Color(0, 0, changeVal, 1);
+			this.deltaColor = new Color(0, 0, changeVal, 1);
 			break;
 		}
 	}

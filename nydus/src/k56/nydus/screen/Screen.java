@@ -1,5 +1,6 @@
 package k56.nydus.screen;
 
+import k56.nydus.core.Engine;
 import k56.nydus.ui.ColorTable;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -32,6 +33,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 	private Vector3 mouse = new Vector3();
 	private float panY, panX = 0;
 	private Direction direction;
+	private Engine engine;
 	
 	// User interface
 	private Stage stage;
@@ -46,6 +48,9 @@ public class Screen implements ApplicationListener, InputProcessor {
 		batch = new SpriteBatch();
 		
 		region = new TextureRegion(new Texture(Gdx.files.internal("assets/test.png")));
+
+		engine = new Engine(camera);
+
 		stage = new Stage(200, 200, true);
 		loadUI();
 		
@@ -93,8 +98,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		batch.draw(region, 0, 0);
-		// engine.render()
+		engine.render(batch);
 		batch.end();
 		
 		stage.draw();
