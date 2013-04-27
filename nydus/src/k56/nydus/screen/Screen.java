@@ -1,5 +1,7 @@
 package k56.nydus.screen;
 
+import k56.nydus.core.Engine;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -24,6 +26,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 	private Vector3 mouse = new Vector3();
 	private float panY, panX = 0;
 	private Direction direction;
+	private Engine engine;
 
 	@Override
 	public void create() {
@@ -33,6 +36,8 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		region = new TextureRegion(new Texture(Gdx.files.internal("assets/test.png")));
 		Gdx.input.setInputProcessor(this);
+		
+		engine = new Engine(camera);
 	}
 
 	@Override
@@ -49,8 +54,8 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		batch.draw(region, 0, 0);
-		// engine.render()
+//		batch.draw(region, 0, 0);
+		engine.render(batch);
 		batch.end();
 		
 		
