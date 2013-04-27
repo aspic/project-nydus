@@ -30,6 +30,7 @@ public class Level {
 	public void draw(SpriteBatch sb){
 		sb.setColor(this.color);
 		sb.draw(background, 0, 0, width, height);
+		sb.setColor(Color.WHITE);
 	}
 
 	public float getWidth() {
