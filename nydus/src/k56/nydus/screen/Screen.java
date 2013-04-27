@@ -1,11 +1,14 @@
 package k56.nydus.screen;
 
 import k56.nydus.core.Engine;
+//import k56.nydus.ui.ColorTable;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,6 +16,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 public class Screen implements ApplicationListener, InputProcessor {
 	private int viewWidth = 10;
@@ -27,6 +34,8 @@ public class Screen implements ApplicationListener, InputProcessor {
 	private float panY, panX = 0;
 	private Direction direction;
 	private Engine engine;
+	
+	private Stage stage;
 
 	@Override
 	public void create() {
@@ -35,10 +44,38 @@ public class Screen implements ApplicationListener, InputProcessor {
 		batch = new SpriteBatch();
 		
 		region = new TextureRegion(new Texture(Gdx.files.internal("assets/test.png")));
-		Gdx.input.setInputProcessor(this);
-		
+
 		engine = new Engine(camera);
+
+		stage = new Stage(200, 200, true);
+//		loadUI();
+		
+		Gdx.input.setInputProcessor(new InputMultiplexer(this));
 	}
+	
+	/** Load some minimalistic user interface */
+//	private void loadUI() {
+//		// Load UI
+//		ColorTable redColor = new ColorTable(10, 10, region, Color.RED);
+//		ColorTable greenColor = new ColorTable(10, 10, region, Color.GREEN);
+//		ColorTable blueColor = new ColorTable(10, 10, region, Color.BLUE);
+//		
+//		Table table = new Table();
+//		table.defaults().pad(5);
+//		table.setSize(stage.getWidth()*0.2f, stage.getHeight());
+//		table.setPosition(stage.getWidth() - table.getWidth(), 0);
+//		
+//		LabelStyle style = new LabelStyle(new BitmapFont(), Color.BLACK);
+//		Label label = new Label("Color", style);
+//		
+//		// Do layout
+//		table.add(label).row();
+//		table.add(redColor).width(10).height(10).row();
+//		table.add(greenColor).width(10).height(10).row();
+//		table.add(blueColor).width(10).height(10).row();
+//		
+//		stage.addActor(table);
+//	}
 
 	@Override
 	public void resize(int width, int height) {
@@ -58,6 +95,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 		engine.render(batch);
 		batch.end();
 		
+		stage.draw();
 		
 		if(direction != null) panCamera();
 		
@@ -84,10 +122,10 @@ public class Screen implements ApplicationListener, InputProcessor {
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
 		case Keys.Q:
-			// engine() switch color?
+//			engine.setAction();
 			break;
 		case Keys.E:
-			// engine() switch color?
+//			engine.setAction();
 			break;
 		case Keys.W:
 			direction = Direction.NORTH;
@@ -122,7 +160,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		mouse.set(screenX, screenY, 0);
 		camera.unproject(mouse);
-		// engine.clicked();
+		// engine.fill();
 		
 		return false;
 	}
