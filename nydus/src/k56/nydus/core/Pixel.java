@@ -20,6 +20,8 @@ public class Pixel {
 	 */
 	private float colorSpectrumFactor = 0.05f;
 	
+	private boolean lock = false; //If true color can not change.
+	
 	
 	private TextureRegion region;
 	
@@ -39,11 +41,13 @@ public class Pixel {
 	}
 	
 	public void addColor(Color color){
-		this.color.add(color);
+		if(!lock)
+			this.color.add(color);
 	}
 	
 	public void subColor(Color color){
-		this.color.sub(color);
+		if(!lock)
+			this.color.sub(color);
 	}
 	
 	/***
@@ -58,12 +62,48 @@ public class Pixel {
 		return false;
 	}
 	
+	public boolean intersects(Pixel pixel){
+		if(this.insidePixel(pixel.getX(), pixel.getY()) || 
+				this.insidePixel(pixel.getX()+pixel.getWidth(), pixel.getY()) ||
+				this.insidePixel(pixel.getX(), pixel.getY()+pixel.getHeight()) ||
+				this.insidePixel(pixel.getX()+ pixel.getWidth(), pixel.getY()+pixel.getHeight())){
+			return true;
+		}
+		return false;
+	}
+	
+	public float getX() {
+		return x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public float getHeight() {
+		return height;
+	}
+
+	public float getWidth() {
+		return width;
+	}
+
 	public float getColorSpectrumFactor() {
 		return colorSpectrumFactor;
 	}
 	
 	public void setColorSpectrumFactor(float colorSpectrumFactor) {
 		this.colorSpectrumFactor = colorSpectrumFactor;
+	}
+	
+	public void setColorandLock(Color color){
+		this.color = color;
+		this.lock = true;
+	}
+
+	public Color getColor() {
+		// TODO Auto-generated method stub
+		return this.color;
 	}
 	
 }
