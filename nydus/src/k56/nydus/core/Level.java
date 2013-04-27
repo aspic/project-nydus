@@ -11,6 +11,7 @@ public class Level {
 	private float height,width;
 	
 	private int numberOfPixels;
+	private float pixelHeight;
 	
 	private Color color;
 	private float ratio;
@@ -53,5 +54,22 @@ public class Level {
 	public void setRatio(float zoom) {
 		this.ratio = zoom;
 	}
+	
+	public void setColor(Color color){
+		this.color = color;
+	}
 
+	public float getPixelDim() {
+		return pixelHeight;
+	}
+
+	public void setPixelHeight(float pixelHeight) {
+		this.pixelHeight = pixelHeight;
+	}
+
+	public Color getColor() {
+		// TODO Auto-generated method stub
+		return this.color;
+	}
+	
 }
