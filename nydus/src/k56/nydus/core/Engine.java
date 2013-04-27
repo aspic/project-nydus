@@ -30,11 +30,12 @@ public class Engine {
 	}
 
 	private void generateLevel(){
-		//Generate a level here.
+		//Generate a level here
+		int regionDim = 5;
 		this.level = new Level(10, 10, new TextureRegion(texture));
-		for (int i = 0; i < level.getWidth()-5; i+=5) {
+		for (int i = 0; i < level.getWidth()-regionDim; i+=regionDim) {
 			for (int j = 0; j < level.getHeight(); j++) {
-				placePixel(i, j);
+				placePixel(i, j, regionDim);
 			}
 		}
 		
@@ -51,12 +52,12 @@ public class Engine {
 //		}
 	}
 	
-	private void placePixel(float x, float y){
+	private void placePixel(float x, float y, int regionDim){
 		float threshold = 0.5f;
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < regionDim; i++) {
 			float generate = MathUtils.random();
 			if(generate> threshold){
-				pixelList.add(new Pixel(x+i,y+i, new TextureRegion(texture)));				
+				pixelList.add(new Pixel((x)+i,(y-regionDim)+i, new TextureRegion(texture)));				
 			}
 		}
 	}
