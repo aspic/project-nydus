@@ -1,7 +1,5 @@
 package k56.nydus.core;
 
-import javax.swing.plaf.synth.Region;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,7 +17,6 @@ public class Level {
 	public Level (float width, float height, TextureRegion region){
 		this.width = width;
 		this.height = height;
-		this.color = Color.PINK;
 		this.background = region;
 	}
 
@@ -40,5 +37,8 @@ public class Level {
 	public float getHeight(){
 		return this.height;
 	}
-
+	
+	public void setColor(Color color){
+		this.color = color;
+	}
 }

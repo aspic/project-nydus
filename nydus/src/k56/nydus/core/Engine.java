@@ -17,9 +17,9 @@ public class Engine {
 	private Camera camera;
 	
 	//Value that color is changes when hit by the player.
-	private float changeVal = 0.05f;
+	private float changeVal = 0.01f;
 	private Color deltaColor; //Will be used to add to the pixel color.
-	
+
 	private Texture texture;
 
 	
@@ -109,4 +109,6 @@ public class Engine {
 	public void setChangeVal(float value){
 		this.changeVal = value;
 	}
+	
+
 }
