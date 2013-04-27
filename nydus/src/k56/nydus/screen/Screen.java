@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -34,7 +35,6 @@ public class Screen implements ApplicationListener, InputProcessor {
 	
 	private Vector3 mouse = new Vector3();
 	private float panY, panX = 0;
-	private Direction direction;
 	private Engine engine;
 	
 	// User interface
@@ -43,7 +43,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 	private int selectedColor;
 	
 	private boolean touching;
-	
+	private Action action = Action.ADD;
 
 	@Override
 	public void create() {
@@ -110,7 +110,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		stage.draw();
 		
-		if(direction != null) panCamera();
+		panCamera();
 		
 		camera.position.add(panX*delta, panY*delta, 0);
 		camera.update();
@@ -119,7 +119,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 		panX *= 0.9f;
 		
 		if(touching) {
-			engine.clicked(mouse.x, mouse.y, Action.ADD);
+			engine.clicked(mouse.x, mouse.y, action);
 		}
 	}
 
@@ -138,30 +138,27 @@ public class Screen implements ApplicationListener, InputProcessor {
 	@Override
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
-		case Keys.Q:
-			selectColor(-1);
+		case Keys.NUM_1:
+			selectColor(0);
 			break;
-		case Keys.E:
+		case Keys.NUM_2:
 			selectColor(1);
 			break;
-		case Keys.W:
-			direction = Direction.NORTH;
+		case Keys.NUM_3:
+			selectColor(2);
 			break;
-		case Keys.A:
-			direction = Direction.EAST;
+		case Keys.Q:
+			action = Action.SUB;
 			break;
-		case Keys.D:
-			direction = Direction.WEST;
-			break;
-		case Keys.S:
-			direction = Direction.SOUTH;
+		case Keys.E:
+			action = Action.ADD;
 			break;
 		}
 		return false;
 	}
 	
-	private void selectColor(int i) {
-		selectedColor += i;
+	private void toggleColor(int direction) {
+		selectedColor += direction;
 		if(selectedColor >= pallette.length) {
 			selectedColor = 0;
 		} else if(selectedColor < 0) {
@@ -171,14 +168,23 @@ public class Screen implements ApplicationListener, InputProcessor {
 			if(j == selectedColor) pallette[j].setSelected();
 			else pallette[j].deselect();
 		}
-		
 		engine.setColor(pallette[selectedColor].getShootingValue());
+	}
+	
+	private void selectColor(int i) {
+		if(i >= 0 && i <= pallette.length) {
+			selectedColor = i;
+			
+			for (int j = 0; j < pallette.length; j++) {
+				if(j == selectedColor) pallette[j].setSelected();
+				else pallette[j].deselect();
+			}
+			engine.setColor(pallette[selectedColor].getShootingValue());
+		}
 	}
 
 	@Override
 	public boolean keyUp(int keycode) {
-		direction = null;
-		
 		return false;
 	}
 
@@ -225,20 +231,21 @@ public class Screen implements ApplicationListener, InputProcessor {
 	}
 	
 	private void panCamera() {
-		float diffX = camera.position.x + direction.x;
-		float diffY = camera.position.y + direction.y;
 		
-		if(diffX > (viewWidth - engine.getWidth())*0.5f && diffX < (viewWidth + engine.getWidth())*0.5f) panX += direction.x;
-		if(diffY > (viewHeight - engine.getHeight())*0.5f && diffY < (viewHeight + engine.getHeight())*0.5f) panY += direction.y;
+		float dirX = 0, dirY = 0;
+		if(Gdx.input.isKeyPressed(Keys.W)) dirY = 1;
+		if(Gdx.input.isKeyPressed(Keys.S)) dirY = -1;
+		if(Gdx.input.isKeyPressed(Keys.A)) dirX = -1;
+		if(Gdx.input.isKeyPressed(Keys.D)) dirX = 1;
+		
+		float diffX = camera.position.x + dirX;
+		float diffY = camera.position.y + dirY;
+		
+		if((dirX < 0 && diffX > (viewWidth - engine.getWidth())*0.5f)) panX += dirX;
+		else if(dirX > 0 && diffX < (viewWidth + engine.getWidth())*0.5f) panX += dirX;
+		
+		if((dirY < 0 && diffY > (viewHeight - engine.getHeight())*0.5f)) panY += dirY;
+		else if(dirY > 0 && diffY < (viewHeight + engine.getHeight())*0.5f) panY += dirY;
+		
 	}
-	
-	private enum Direction {
-		NORTH(0, 1), EAST(-1, 0), WEST(1, 0), SOUTH(0, -1);
-		int x,y;
-		Direction(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-	}
-
 }
