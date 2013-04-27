@@ -92,6 +92,9 @@ public class Engine {
 			//Check to see if pixel is completed.
 			isCorrectColor(pixelList.get(i));
 		}
+		if(isLevelDone()){
+			//TODO: Insert what to do when level is done.
+		}
 	}
 	
 	private void isCorrectColor(Pixel pixel) {
@@ -100,6 +103,7 @@ public class Engine {
 		g = pixel.getColor().g - level.getColor().g;
 		b = pixel.getColor().b - level.getColor().b;
 		if(r < this.colorThreshold && g < this.colorThreshold && b < this.colorThreshold){
+			System.out.println("Pixel correct! Move on!");
 			pixel.setColorandLock(level.getColor());
 		}
 	}
@@ -142,5 +146,19 @@ public class Engine {
 
 	public void setZoom(float zoom) {
 		level.setRatio(zoom);
+	}
+	
+	public boolean isLevelDone(){
+		int counter = 0;
+		for (int i = 0; i < pixelList.size; i++) {
+			if(pixelList.get(i).getColor() == this.level.getColor()){
+				counter++;
+			}
+		}
+		if (counter == pixelList.size){
+			System.out.println("Level Done!");
+			return true;
+		}
+		return false;
 	}
 }

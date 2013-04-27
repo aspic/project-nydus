@@ -46,8 +46,9 @@ public class Pixel {
 	}
 	
 	public void subColor(Color color){
+		Color tmpColor = new Color(color.r, color.g, color.b, 0);
 		if(!lock)
-			this.color.sub(color);
+			this.color.sub(tmpColor);
 	}
 	
 	/***
