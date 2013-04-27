@@ -8,18 +8,21 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class ColorTable extends Table {
 	
-	private Color selectedColor;
-	
 	public ColorTable(int width, int height, TextureRegion region, Color color) {
 		Image image = new Image(new TextureRegionDrawable(region));
 		image.setColor(color);
 		
 		this.setBackground(new TextureRegionDrawable(region));
 		
-		selectedColor = new Color(Color.ORANGE);
-		this.setColor(selectedColor);
-		
 		this.size(width, height);
 		add(image).expand().fill().pad(1);
+	}
+	
+	public void setSelected() {
+		this.setColor(Color.WHITE);
+	}
+
+	public void deselect() {
+		this.setColor(Color.BLACK);
 	}
 }

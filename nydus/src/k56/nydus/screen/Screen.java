@@ -33,7 +33,11 @@ public class Screen implements ApplicationListener, InputProcessor {
 	private float panY, panX = 0;
 	private Direction direction;
 	
+	// User interface
 	private Stage stage;
+	private ColorTable[] pallette;
+	private int selectedColor;
+	
 
 	@Override
 	public void create() {
@@ -50,10 +54,12 @@ public class Screen implements ApplicationListener, InputProcessor {
 	
 	/** Load some minimalistic user interface */
 	private void loadUI() {
+		
+		pallette = new ColorTable[3];
 		// Load UI
-		ColorTable redColor = new ColorTable(10, 10, region, Color.RED);
-		ColorTable greenColor = new ColorTable(10, 10, region, Color.GREEN);
-		ColorTable blueColor = new ColorTable(10, 10, region, Color.BLUE);
+		pallette[0] = new ColorTable(10, 10, region, Color.RED);
+		pallette[1] = new ColorTable(10, 10, region, Color.GREEN);
+		pallette[2] = new ColorTable(10, 10, region, Color.BLUE);
 		
 		Table table = new Table();
 		table.defaults().pad(5);
@@ -65,10 +71,11 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		// Do layout
 		table.add(label).row();
-		table.add(redColor).width(10).height(10).row();
-		table.add(greenColor).width(10).height(10).row();
-		table.add(blueColor).width(10).height(10).row();
+		table.add(pallette[0]).width(10).height(10).row();
+		table.add(pallette[1]).width(10).height(10).row();
+		table.add(pallette[2]).width(10).height(10).row();
 		
+		// Add to stage
 		stage.addActor(table);
 	}
 
@@ -117,10 +124,10 @@ public class Screen implements ApplicationListener, InputProcessor {
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
 		case Keys.Q:
-//			engine.setAction();
+			selectColor(-1);
 			break;
 		case Keys.E:
-//			engine.setAction();
+			selectColor(1);
 			break;
 		case Keys.W:
 			direction = Direction.NORTH;
@@ -136,6 +143,20 @@ public class Screen implements ApplicationListener, InputProcessor {
 			break;
 		}
 		return false;
+	}
+	
+	private void selectColor(int i) {
+		selectedColor += i;
+		if(selectedColor >= pallette.length) {
+			selectedColor = 0;
+		} else if(selectedColor < 0) {
+			selectedColor = pallette.length-1;
+		}
+		for (int j = 0; j < pallette.length; j++) {
+			if(j == selectedColor) pallette[j].setSelected();
+			else pallette[j].deselect();
+		}
+		
 	}
 
 	@Override
