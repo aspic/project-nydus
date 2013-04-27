@@ -101,5 +101,12 @@ public class Engine {
 			pixelList.get(i).draw(sb);
 		}
 	}
-
+	
+	public float getWidth() {
+		return level.getWidth();
+	}
+	
+	public float getHeight() {
+		return level.getHeight();
+	}
 }

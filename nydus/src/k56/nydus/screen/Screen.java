@@ -55,6 +55,9 @@ public class Screen implements ApplicationListener, InputProcessor {
 		loadUI();
 		
 		Gdx.input.setInputProcessor(new InputMultiplexer(this));
+		
+		camera.position.x = engine.getWidth()*0.5f;
+		camera.position.y = engine.getHeight()*0.5f;
 	}
 	
 	/** Load some minimalistic user interface */
@@ -213,12 +216,15 @@ public class Screen implements ApplicationListener, InputProcessor {
 	}
 	
 	private void panCamera() {
-		panX += direction.x;
-		panY += direction.y;
+		float diffX = camera.position.x + direction.x;
+		float diffY = camera.position.y + direction.y;
+		
+		if(diffX > (viewWidth - engine.getWidth())*0.5f && diffX < (viewWidth + engine.getWidth())*0.5f) panX += direction.x;
+		if(diffY > (viewHeight - engine.getHeight())*0.5f && diffY < (viewHeight + engine.getHeight())*0.5f) panY += direction.y;
 	}
 	
 	private enum Direction {
-		NORTH(0, -1), EAST(1, 0), WEST(-1, 0), SOUTH(0, 1);
+		NORTH(0, 1), EAST(-1, 0), WEST(1, 0), SOUTH(0, -1);
 		int x,y;
 		Direction(int x, int y) {
 			this.x = x;
