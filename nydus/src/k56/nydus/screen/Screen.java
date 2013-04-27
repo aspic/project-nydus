@@ -1,5 +1,6 @@
 package k56.nydus.screen;
 
+import k56.nydus.core.Action;
 import k56.nydus.core.Engine;
 import k56.nydus.ui.ColorTable;
 
@@ -183,7 +184,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		mouse.set(screenX, screenY, 0);
 		camera.unproject(mouse);
-		// engine.fill();
+		engine.clicked(mouse.x, mouse.y, Action.ADD);
 		
 		return false;
 	}
