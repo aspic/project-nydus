@@ -29,10 +29,12 @@ public class Engine {
 		generateLevel();
 	}
 
+	
 	private void generateLevel(){
 		//Generate a level here
 		int regionDim = 5;
 		this.level = new Level(10, 10, new TextureRegion(texture));
+		level.setColor(Color.CYAN);
 		for (int i = 0; i < level.getWidth(); i+=regionDim) {
 			for (int j = 0; j < level.getHeight(); j+=regionDim) {
 				placePixel(i, j, regionDim);
