@@ -139,6 +139,8 @@ public class Engine {
 	public void setChangeVal(float value){
 		this.changeVal = value;
 	}
-	
 
+	public void setZoom(float zoom) {
+		level.setRatio(zoom);
+	}
 }

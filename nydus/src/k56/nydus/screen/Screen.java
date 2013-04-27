@@ -37,17 +37,19 @@ public class Screen implements ApplicationListener, InputProcessor {
 	private float panY, panX = 0;
 	private Engine engine;
 	
+	private boolean touching;
+	private Action action = Action.ADD;
+	private float lastZoom;
+	private float zoom = 1;
+	private float duration = 1f;
+	private float runtime;
+	
 	// User interface
 	private Stage stage;
 	private ColorTable[] pallette;
 	private int selectedColor;
+	private Label actionLabel;
 	
-	private boolean touching;
-	private Action action = Action.ADD;
-	private float zoom = 1;
-	private float duration = 1f;
-	private float runtime;
-
 	@Override
 	public void create() {
 		float aspect = (float)Gdx.graphics.getWidth()/Gdx.graphics.getHeight();
@@ -60,7 +62,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 
 		stage = new Stage(200, 200, true);
 		loadUI();
-		engine.setColor(pallette[0].getShootingValue());
+		selectColor(0);
 		Gdx.input.setInputProcessor(new InputMultiplexer(this));
 		
 		camera.position.x = engine.getWidth()*0.5f;
@@ -71,24 +73,28 @@ public class Screen implements ApplicationListener, InputProcessor {
 	private void loadUI() {
 		
 		pallette = new ColorTable[3];
+		float dimension = 15f;
+		
 		// Load UI
-		pallette[0] = new ColorTable(10, 10, region, ShootingValue.RED);
-		pallette[1] = new ColorTable(10, 10, region, ShootingValue.GREEN);
-		pallette[2] = new ColorTable(10, 10, region, ShootingValue.BLUE);
+		pallette[0] = new ColorTable(dimension, dimension, region, ShootingValue.RED);
+		pallette[1] = new ColorTable(dimension, dimension, region, ShootingValue.GREEN);
+		pallette[2] = new ColorTable(dimension, dimension, region, ShootingValue.BLUE);
 		
 		Table table = new Table();
-		table.defaults().pad(5);
+		table.defaults().pad(5).width(dimension).height(dimension).expandX();
 		table.setSize(stage.getWidth()*0.2f, stage.getHeight());
 		table.setPosition(stage.getWidth() - table.getWidth(), 0);
 		
 		LabelStyle style = new LabelStyle(new BitmapFont(), Color.BLACK);
 		Label label = new Label("Color", style);
+		actionLabel = new Label("Action", style);
 		
 		// Do layout
 		table.add(label).row();
-		table.add(pallette[0]).width(10).height(10).row();
-		table.add(pallette[1]).width(10).height(10).row();
-		table.add(pallette[2]).width(10).height(10).row();
+		table.add(pallette[0]).row();
+		table.add(pallette[1]).row();
+		table.add(pallette[2]).row();
+		table.add(actionLabel).row();
 		
 		// Add to stage
 		stage.addActor(table);
@@ -153,30 +159,21 @@ public class Screen implements ApplicationListener, InputProcessor {
 			break;
 		case Keys.Q:
 			action = Action.SUB;
+			actionLabel.setText("Subtract");
 			break;
 		case Keys.E:
 			action = Action.ADD;
+			actionLabel.setText("Add");
 			break;
 			
 		case Keys.SPACE:
-			zoom = 10f;
+			lastZoom = zoom;
+			zoom *= 10f;
+			runtime = 0;
+			engine.setZoom(zoom);
 			break;
 		}
 		return false;
-	}
-	
-	private void toggleColor(int direction) {
-		selectedColor += direction;
-		if(selectedColor >= pallette.length) {
-			selectedColor = 0;
-		} else if(selectedColor < 0) {
-			selectedColor = pallette.length-1;
-		}
-		for (int j = 0; j < pallette.length; j++) {
-			if(j == selectedColor) pallette[j].setSelected();
-			else pallette[j].deselect();
-		}
-		engine.setColor(pallette[selectedColor].getShootingValue());
 	}
 	
 	private void selectColor(int i) {
@@ -242,7 +239,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		if(camera.zoom < zoom) {
 			runtime += delta;
-			float deltaZoom = Interpolation.bounceOut.apply(1, zoom, runtime/duration);
+			float deltaZoom = Interpolation.bounceOut.apply(lastZoom, zoom, runtime/duration);
 			camera.zoom = deltaZoom;
 			
 		} else {
@@ -259,14 +256,13 @@ public class Screen implements ApplicationListener, InputProcessor {
 		if(Gdx.input.isKeyPressed(Keys.A)) dirX = -1;
 		if(Gdx.input.isKeyPressed(Keys.D)) dirX = 1;
 		
-		float diffX = camera.position.x + dirX;
-		float diffY = camera.position.y + dirY;
+		float diffX = camera.position.x + dirX*zoom;
+		float diffY = camera.position.y + dirY*zoom;
 		
-		if((dirX < 0 && diffX > (viewWidth - engine.getWidth())*0.5f)) panX += dirX;
-		else if(dirX > 0 && diffX < (viewWidth + engine.getWidth())*0.5f) panX += dirX;
+		if(dirX < 0 && diffX > (viewWidth*zoom - engine.getWidth())*0.5f) panX += dirX*zoom;
+		else if(dirX > 0 && diffX < (viewWidth*zoom + engine.getWidth())*0.5f) panX += dirX*zoom;
 		
-		if((dirY < 0 && diffY > (viewHeight - engine.getHeight())*0.5f)) panY += dirY;
-		else if(dirY > 0 && diffY < (viewHeight + engine.getHeight())*0.5f) panY += dirY;
-		
+		if((dirY < 0 && diffY > (viewHeight*zoom - engine.getHeight())*0.5f)) panY += dirY*zoom;
+		else if(dirY > 0 && diffY < (viewHeight*zoom + engine.getHeight())*0.5f) panY += dirY*zoom;
 	}
 }

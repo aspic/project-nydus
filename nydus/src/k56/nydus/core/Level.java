@@ -14,11 +14,19 @@ public class Level {
 	private float pixelHeight;
 	
 	private Color color;
+	private float ratio;
 	
-	public Level (float width, float height, TextureRegion region){
-		this.width = width;
-		this.height = height;
+	/** Standard level, ratio of one */
+	public Level(float width, float height, TextureRegion region) {
+		this(width, height, region, 1);
+	}
+	
+	public Level (float width, float height, TextureRegion region, float ratio){
+		this.width = width * ratio;
+		this.height = height * ratio;
+		this.color = Color.PINK;
 		this.background = region;
+		this.ratio = ratio;
 	}
 
 	public int getNumberOfPixels() {
@@ -27,16 +35,24 @@ public class Level {
 	
 	public void draw(SpriteBatch sb){
 		sb.setColor(this.color);
-		sb.draw(background, 0, 0, width, height);
+		sb.draw(background, 0, 0, width * ratio, height * ratio);
 		sb.setColor(Color.WHITE);
 	}
 
 	public float getWidth() {
-		return this.width;
+		return this.width * ratio;
 	}
 	
 	public float getHeight(){
-		return this.height;
+		return this.height * ratio;
+	}
+	
+	public float getRatio() {
+		return this.ratio;
+	}
+
+	public void setRatio(float zoom) {
+		this.ratio = zoom;
 	}
 	
 	public void setColor(Color color){

@@ -12,7 +12,7 @@ public class ColorTable extends Table {
 	
 	private ShootingValue value;
 	
-	public ColorTable(int width, int height, TextureRegion region, ShootingValue value) {
+	public ColorTable(float width, float height, TextureRegion region, ShootingValue value) {
 		this.value = value;
 		
 		Image image = new Image(new TextureRegionDrawable(region));
@@ -21,7 +21,7 @@ public class ColorTable extends Table {
 		this.setBackground(new TextureRegionDrawable(region));
 		
 		this.size(width, height);
-		add(image).expand().fill().pad(1);
+		add(image).expand().fill().pad(2f);
 	}
 	
 	public void setSelected() {
