@@ -17,7 +17,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -44,6 +44,9 @@ public class Screen implements ApplicationListener, InputProcessor {
 	
 	private boolean touching;
 	private Action action = Action.ADD;
+	private float zoom = 1;
+	private float duration = 1f;
+	private float runtime;
 
 	@Override
 	public void create() {
@@ -111,6 +114,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 		stage.draw();
 		
 		panCamera();
+		zoomCamera(delta);
 		
 		camera.position.add(panX*delta, panY*delta, 0);
 		camera.update();
@@ -152,6 +156,10 @@ public class Screen implements ApplicationListener, InputProcessor {
 			break;
 		case Keys.E:
 			action = Action.ADD;
+			break;
+			
+		case Keys.SPACE:
+			zoom = 10f;
 			break;
 		}
 		return false;
@@ -228,6 +236,19 @@ public class Screen implements ApplicationListener, InputProcessor {
 	public boolean scrolled(int amount) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	private void zoomCamera(float delta) {
+		
+		if(camera.zoom < zoom) {
+			runtime += delta;
+			float deltaZoom = Interpolation.bounceOut.apply(1, zoom, runtime/duration);
+			camera.zoom = deltaZoom;
+			
+		} else {
+			camera.zoom = zoom;
+		}
+		
 	}
 	
 	private void panCamera() {
