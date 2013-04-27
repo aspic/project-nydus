@@ -15,6 +15,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEmitter.Particle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
@@ -44,6 +46,8 @@ public class Screen implements ApplicationListener, InputProcessor {
 	private float duration = 1f;
 	private float runtime;
 	
+	private ParticleEffect effect;
+	
 	// User interface
 	private Stage stage;
 	private ColorTable[] pallette;
@@ -67,6 +71,10 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		camera.position.x = engine.getWidth()*0.5f;
 		camera.position.y = engine.getHeight()*0.5f;
+		
+		effect = new ParticleEffect();
+		effect.load(Gdx.files.internal("assets/particle/filler"), Gdx.files.internal("assets/"));
+
 	}
 	
 	/** Load some minimalistic user interface */
@@ -114,8 +122,14 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
+
 		engine.render(batch);
+		batch.setColor(Color.BLUE);
+		effect.draw(batch, delta);
+		batch.setColor(Color.WHITE);
+
 		batch.end();
+		
 		
 		stage.draw();
 		
@@ -203,7 +217,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		mouse.set(screenX, screenY, 0);
 		camera.unproject(mouse);
-
+		effect.start();
 		touching = true;
 		return false;
 	}
@@ -211,12 +225,15 @@ public class Screen implements ApplicationListener, InputProcessor {
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		touching = false;
+		effect.setDuration(0);
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
+		mouse.set(screenX, screenY, 0);
+		camera.unproject(mouse);
+		effect.setPosition(mouse.x, mouse.y);
 		return false;
 	}
 
@@ -224,8 +241,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 	public boolean mouseMoved(int screenX, int screenY) {
 		mouse.set(screenX, screenY, 0);
 		camera.unproject(mouse);
-
-		System.out.println("Pointer at: " + mouse);
+		effect.setPosition(mouse.x, mouse.y);
 		return false;
 	}
 
