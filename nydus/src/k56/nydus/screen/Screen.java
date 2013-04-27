@@ -1,7 +1,7 @@
 package k56.nydus.screen;
 
 import k56.nydus.core.Engine;
-//import k56.nydus.ui.ColorTable;
+import k56.nydus.ui.ColorTable;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -35,7 +35,11 @@ public class Screen implements ApplicationListener, InputProcessor {
 	private Direction direction;
 	private Engine engine;
 	
+	// User interface
 	private Stage stage;
+	private ColorTable[] pallette;
+	private int selectedColor;
+	
 
 	@Override
 	public void create() {
@@ -48,34 +52,37 @@ public class Screen implements ApplicationListener, InputProcessor {
 		engine = new Engine(camera);
 
 		stage = new Stage(200, 200, true);
-//		loadUI();
+		loadUI();
 		
 		Gdx.input.setInputProcessor(new InputMultiplexer(this));
 	}
 	
 	/** Load some minimalistic user interface */
-//	private void loadUI() {
-//		// Load UI
-//		ColorTable redColor = new ColorTable(10, 10, region, Color.RED);
-//		ColorTable greenColor = new ColorTable(10, 10, region, Color.GREEN);
-//		ColorTable blueColor = new ColorTable(10, 10, region, Color.BLUE);
-//		
-//		Table table = new Table();
-//		table.defaults().pad(5);
-//		table.setSize(stage.getWidth()*0.2f, stage.getHeight());
-//		table.setPosition(stage.getWidth() - table.getWidth(), 0);
-//		
-//		LabelStyle style = new LabelStyle(new BitmapFont(), Color.BLACK);
-//		Label label = new Label("Color", style);
-//		
-//		// Do layout
-//		table.add(label).row();
-//		table.add(redColor).width(10).height(10).row();
-//		table.add(greenColor).width(10).height(10).row();
-//		table.add(blueColor).width(10).height(10).row();
-//		
-//		stage.addActor(table);
-//	}
+	private void loadUI() {
+		
+		pallette = new ColorTable[3];
+		// Load UI
+		pallette[0] = new ColorTable(10, 10, region, Color.RED);
+		pallette[1] = new ColorTable(10, 10, region, Color.GREEN);
+		pallette[2] = new ColorTable(10, 10, region, Color.BLUE);
+		
+		Table table = new Table();
+		table.defaults().pad(5);
+		table.setSize(stage.getWidth()*0.2f, stage.getHeight());
+		table.setPosition(stage.getWidth() - table.getWidth(), 0);
+		
+		LabelStyle style = new LabelStyle(new BitmapFont(), Color.BLACK);
+		Label label = new Label("Color", style);
+		
+		// Do layout
+		table.add(label).row();
+		table.add(pallette[0]).width(10).height(10).row();
+		table.add(pallette[1]).width(10).height(10).row();
+		table.add(pallette[2]).width(10).height(10).row();
+		
+		// Add to stage
+		stage.addActor(table);
+	}
 
 	@Override
 	public void resize(int width, int height) {
@@ -91,7 +98,6 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-//		batch.draw(region, 0, 0);
 		engine.render(batch);
 		batch.end();
 		
@@ -122,10 +128,10 @@ public class Screen implements ApplicationListener, InputProcessor {
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
 		case Keys.Q:
-//			engine.setAction();
+			selectColor(-1);
 			break;
 		case Keys.E:
-//			engine.setAction();
+			selectColor(1);
 			break;
 		case Keys.W:
 			direction = Direction.NORTH;
@@ -141,6 +147,20 @@ public class Screen implements ApplicationListener, InputProcessor {
 			break;
 		}
 		return false;
+	}
+	
+	private void selectColor(int i) {
+		selectedColor += i;
+		if(selectedColor >= pallette.length) {
+			selectedColor = 0;
+		} else if(selectedColor < 0) {
+			selectedColor = pallette.length-1;
+		}
+		for (int j = 0; j < pallette.length; j++) {
+			if(j == selectedColor) pallette[j].setSelected();
+			else pallette[j].deselect();
+		}
+		
 	}
 
 	@Override
