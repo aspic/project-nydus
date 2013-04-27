@@ -27,6 +27,7 @@ public class Engine {
 		pixelList = new Array<Pixel>();
 		texture = new Texture(Gdx.files.internal("assets/test.png"));
 		generateLevel();
+		setColor(ShootingValue.RED);
 	}
 
 	private void generateLevel(){
@@ -38,18 +39,6 @@ public class Engine {
 				placePixel(i, j, regionDim);
 			}
 		}
-		
-//		double generatePixelThreshold = 1 - (double)level.getNumberOfPixels()/(double)(level.getHeight()*level.getWidth());
-//		for (int i = 0; i < level.getNumberOfPixels(); i++) {
-//			double generate = MathUtils.random(0, 1);
-//			if(generate > generatePixelThreshold){
-//				for()
-//				float tempXPos, tempYPos;
-//				tempXPos = (float) (Math.random() % (float) level.getWidth());
-//				tempYPos = (float) (Math.random() % (float) level.getHeight());
-//				this.pixelList.add(new Pixel(tempXPos, tempYPos));
-//			}
-//		}
 	}
 	
 	private void placePixel(float x, float y, int regionDim){
@@ -57,7 +46,7 @@ public class Engine {
 		for (int i = 0; i < regionDim; i++) {
 			float generate = MathUtils.random();
 			if(generate> threshold){
-				pixelList.add(new Pixel((x)+i,(y-regionDim)+i, new TextureRegion(texture)));				
+				pixelList.add(new Pixel(x+i,(y-1*i), new TextureRegion(texture)));				
 			}
 		}
 	}
