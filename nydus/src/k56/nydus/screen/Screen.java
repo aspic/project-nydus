@@ -43,6 +43,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 	private int selectedColor;
 	
 	private boolean touching;
+	private Action action = Action.ADD;
 	
 
 	@Override
@@ -119,7 +120,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 		panX *= 0.9f;
 		
 		if(touching) {
-			engine.clicked(mouse.x, mouse.y, Action.ADD);
+			engine.clicked(mouse.x, mouse.y, action);
 		}
 	}
 
@@ -138,11 +139,20 @@ public class Screen implements ApplicationListener, InputProcessor {
 	@Override
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
+		case Keys.NUM_1:
+			selectColor(0);
+			break;
+		case Keys.NUM_2:
+			selectColor(1);
+			break;
+		case Keys.NUM_3:
+			selectColor(2);
+			break;
 		case Keys.Q:
-			selectColor(-1);
+			action = Action.SUB;
 			break;
 		case Keys.E:
-			selectColor(1);
+			action = Action.ADD;
 			break;
 		case Keys.W:
 			direction = Direction.NORTH;
@@ -160,8 +170,8 @@ public class Screen implements ApplicationListener, InputProcessor {
 		return false;
 	}
 	
-	private void selectColor(int i) {
-		selectedColor += i;
+	private void toggleColor(int direction) {
+		selectedColor += direction;
 		if(selectedColor >= pallette.length) {
 			selectedColor = 0;
 		} else if(selectedColor < 0) {
@@ -171,8 +181,19 @@ public class Screen implements ApplicationListener, InputProcessor {
 			if(j == selectedColor) pallette[j].setSelected();
 			else pallette[j].deselect();
 		}
-		
 		engine.setColor(pallette[selectedColor].getShootingValue());
+	}
+	
+	private void selectColor(int i) {
+		if(i >= 0 && i <= pallette.length) {
+			selectedColor = i;
+			
+			for (int j = 0; j < pallette.length; j++) {
+				if(j == selectedColor) pallette[j].setSelected();
+				else pallette[j].deselect();
+			}
+			engine.setColor(pallette[selectedColor].getShootingValue());
+		}
 	}
 
 	@Override
