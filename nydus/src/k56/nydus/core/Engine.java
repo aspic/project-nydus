@@ -26,24 +26,24 @@ public class Engine {
 	public Engine( Camera camera ){
 		pixelList = new Array<Pixel>();
 		texture = new Texture(Gdx.files.internal("assets/test.png"));
-		generateLevel();
+		generateLevel(1f);
 	}
 
-	private void generateLevel(){
+	private void generateLevel(float width, float height, float dim){
 		//Generate a level here
 		System.out.println("Generate Level");
 		int regionDim = 5;
-		this.level = new Level(10, 10, new TextureRegion(texture));
+		this.level = new Level(width, height, new TextureRegion(texture));
 		level.setColor(Color.DARK_GRAY);
 		level.setPixelHeight(1f);
 		for (int i = 0; i < level.getWidth(); i+=regionDim) {
 			for (int j = 0; j < level.getHeight(); j+=regionDim) {
-				placePixel(i, j, regionDim);
+				placePixel(i, j, regionDim, dim);
 			}
 		}
 	}
 	
-	private void placePixel(float x, float y, int regionDim){
+	private void placePixel(float x, float y, int regionDim, float dim){
 		float threshold = 0.3f;
 		System.out.println("Start Pixel Placement");
 		Array<Pixel> occupied = new Array<Pixel>();
@@ -53,7 +53,7 @@ public class Engine {
 				float pixXPos, pixYPos;
 				pixXPos = MathUtils.random(x, x+regionDim-this.level.getPixelDim());
 				pixYPos = MathUtils.random(y, y+regionDim-this.level.getPixelDim());
-				Pixel tempPixel = new Pixel(pixXPos,pixYPos, new TextureRegion(texture));
+				Pixel tempPixel = new Pixel(pixXPos,pixYPos, dim, new TextureRegion(texture));
 				boolean insert = true;
 				for (int j = 0; j < occupied.size; j++) {
 					System.out.println("Test intersect.");
