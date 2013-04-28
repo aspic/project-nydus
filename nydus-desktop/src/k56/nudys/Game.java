@@ -3,7 +3,7 @@ package k56.nudys;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-import k56.nydus.screen.Screen;
+import k56.nydus.screen.Application;
 
 public class Game {
 	
@@ -16,6 +16,6 @@ public class Game {
 		config.height = 480;
 		config.vSyncEnabled = true;
 		
-		new LwjglApplication(new Screen(), config);
+		new LwjglApplication(new Application(), config);
 	}
 }

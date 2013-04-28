@@ -1,7 +1,6 @@
 package k56.nydus.core;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,13 +19,15 @@ public class Engine {
 
 	private Texture texture;
 	
-	private float colorThreshold = 0.05f;
-
+	private float colorThreshold = 0.03f;
+	private float ammo;
+	private float spectrumFactor;
 	
-	public Engine( Camera camera ){
+	public Engine(float width, float height){
+		spectrumFactor = 0.1f;
 		pixelList = new Array<Pixel>();
 		texture = new Texture(Gdx.files.internal("assets/test.png"));
-		generateLevel(1f);
+		generateLevel(width, height, 1f);
 	}
 
 	private void generateLevel(float width, float height, float dim){
@@ -38,12 +39,24 @@ public class Engine {
 		level.setPixelHeight(1f);
 		for (int i = 0; i < level.getWidth(); i+=regionDim) {
 			for (int j = 0; j < level.getHeight(); j+=regionDim) {
-				placePixel(i, j, regionDim, dim);
+				placePixel(i, j, regionDim);
 			}
 		}
+		this.ammo = calculateAmmo();
 	}
 	
-	private void placePixel(float x, float y, int regionDim, float dim){
+	
+	//Calculates the amount of ammo the player starts with.
+	private float calculateAmmo() {
+		//TODO: Find appropriate value;
+		return 1000;
+	}
+	
+	private void addAmmo(float ammo){
+		this.ammo += ammo;
+	}
+
+	private void placePixel(float x, float y, int regionDim){
 		float threshold = 0.3f;
 		System.out.println("Start Pixel Placement");
 		Array<Pixel> occupied = new Array<Pixel>();
@@ -53,7 +66,8 @@ public class Engine {
 				float pixXPos, pixYPos;
 				pixXPos = MathUtils.random(x, x+regionDim-this.level.getPixelDim());
 				pixYPos = MathUtils.random(y, y+regionDim-this.level.getPixelDim());
-				Pixel tempPixel = new Pixel(pixXPos,pixYPos, dim, new TextureRegion(texture));
+				Pixel tempPixel = new Pixel(pixXPos,pixYPos,this.level.getPixelDim(), new TextureRegion(texture));
+				tempPixel.setColorSpectrumFactor(this.spectrumFactor);
 				boolean insert = true;
 				for (int j = 0; j < occupied.size; j++) {
 					System.out.println("Test intersect.");
@@ -77,7 +91,7 @@ public class Engine {
 	public void clicked(float x, float y, Action action){
 		for (int i = 0; i < pixelList.size; i++) {
 			Pixel tempPixel = pixelList.get(i);
-			if (tempPixel.insidePixel(x, y)){
+			if (tempPixel.insidePixel(x, y) && ammo>0){
 				switch(action){
 				case ADD:
 					pixelList.get(i).addColor(this.deltaColor);
@@ -88,12 +102,9 @@ public class Engine {
 					System.out.println("Sub Color!");
 					break;
 				}
+				//Remove ammo when shot.
+				this.ammo--;
 			}
-			//Check to see if pixel is completed.
-			isCorrectColor(pixelList.get(i));
-		}
-		if(isLevelDone()){
-			//TODO: Insert what to do when level is done.
 		}
 	}
 	
@@ -129,6 +140,17 @@ public class Engine {
 		level.draw(sb);
 		for (int i = 0; i < pixelList.size; i++) {
 			pixelList.get(i).draw(sb);
+
+			//Check to see if pixel is completed.
+			isCorrectColor(pixelList.get(i));
+		}
+		
+		//Check logic for complete level.
+		if(isLevelDone()){
+			//TODO: Insert what to be done when level is complete.
+		}
+		if(!canStillWin()){
+			//TODO: Display game over/failure screen.
 		}
 	}
 	
@@ -160,5 +182,10 @@ public class Engine {
 			return true;
 		}
 		return false;
+	}
+	
+	private boolean canStillWin(){
+		//TODO: Check if there is enough ammo to complete the level.
+		return true;
 	}
 }

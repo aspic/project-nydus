@@ -25,10 +25,10 @@ public class Pixel {
 	
 	private TextureRegion region;
 	
-	public Pixel(float x, float y, TextureRegion textureRegion){
+	public Pixel(float x, float y, float pixelDim, TextureRegion textureRegion){
 		this.color = new Color(MathUtils.random((int)1f/colorSpectrumFactor)/(1f/colorSpectrumFactor), MathUtils.random((int)1f/colorSpectrumFactor)/(1f/colorSpectrumFactor), MathUtils.random((int)1f/colorSpectrumFactor)/(1f/colorSpectrumFactor), 1);
-		this.height = 1;
-		this.width = 1;
+		this.height = pixelDim;
+		this.width = pixelDim;
 		this.x = x;
 		this.y = y;
 		this.region = textureRegion;
