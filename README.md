@@ -6,3 +6,16 @@ project-nydus
 The game theme is _minimalism_.
 
 Designers, developers and animators: Matthew Guise and Kjetil Mehl
+
+TODO:
+
+* Screens (menu, game over/score)
+* Calculate score, ammo stuff
+* Difficulty
+* Transition between levels
+* End game criteria?
+* Improve particles!
+* Sounds?
+
+
+DONE:
