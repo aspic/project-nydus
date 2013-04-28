@@ -14,21 +14,17 @@ public class Level {
 	private float pixelDim;
 	
 	private Color color;
-	private float ratio;
+	private float dimension;
 	
 	private float startingAmmo;
 	
-	/** Standard level, ratio of one */
-	public Level(float width, float height, TextureRegion region) {
-		this(width, height, region, 1);
-	}
-	
-	public Level (float width, float height, TextureRegion region, float ratio){
-		this.width = width * ratio;
-		this.height = height * ratio;
+	public Level (float width, float height, TextureRegion region, float dimension, Color color){
+		this.width = width;
+		this.height = height;
 		this.color = Color.PINK;
 		this.background = region;
-		this.ratio = ratio;
+		this.pixelDim = dimension;
+		this.color = color;
 	}
 
 	public int getNumberOfPixels() {
@@ -37,30 +33,18 @@ public class Level {
 	
 	public void draw(SpriteBatch sb){
 		sb.setColor(this.color);
-		sb.draw(background, 0, 0, width * ratio, height * ratio);
+		sb.draw(background, 0, 0, width, height);
 		sb.setColor(Color.WHITE);
 	}
 
 	public float getWidth() {
-		return this.width * ratio;
+		return this.width;
 	}
 	
 	public float getHeight(){
-		return this.height * ratio;
+		return this.height;
 	}
 	
-	public float getRatio() {
-		return this.ratio;
-	}
-
-	public void setRatio(float zoom) {
-		this.ratio = zoom;
-	}
-	
-	public void setColor(Color color){
-		this.color = color;
-	}
-
 	public float getPixelDim() {
 		return pixelDim;
 	}
@@ -75,6 +59,11 @@ public class Level {
 
 	public float getStartAmmo() {
 		return this.startingAmmo;
+	}
+	
+	/** Returns this level as a new pixel */
+	public Pixel toPixel() {
+		return new Pixel(0, 0, width, background, this.color);
 	}
 	
 }

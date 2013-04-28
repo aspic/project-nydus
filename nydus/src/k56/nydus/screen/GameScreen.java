@@ -170,7 +170,7 @@ public class GameScreen extends Screen implements InputProcessor {
 			lastZoom = zoom;
 			zoom *= 10f;
 			runtime = 0;
-			engine.setZoom(zoom);
+			engine.levelTransition(zoom);
 			break;
 		}
 		return false;

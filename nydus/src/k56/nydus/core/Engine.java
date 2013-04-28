@@ -33,10 +33,14 @@ public class Engine {
 	private void generateLevel(float width, float height, float dim){
 		//Generate a level here
 		System.out.println("Generate Level");
-		int regionDim = 5;
-		this.level = new Level(width, height, new TextureRegion(texture));
-		level.setColor(Color.DARK_GRAY);
-		level.setPixelHeight(1f);
+		if(this.level != null) {
+			pixelList.add(this.level.toPixel());
+			
+		}
+		
+		this.level = new Level(width, height, new TextureRegion(texture), dim, new Color(MathUtils.random(), MathUtils.random(), MathUtils.random(), 1f));
+		
+		int regionDim = (int)(width*0.5f);
 		for (int i = 0; i < level.getWidth(); i+=regionDim) {
 			for (int j = 0; j < level.getHeight(); j+=regionDim) {
 				placePixel(i, j, regionDim);
@@ -66,7 +70,7 @@ public class Engine {
 				float pixXPos, pixYPos;
 				pixXPos = MathUtils.random(x, x+regionDim-this.level.getPixelDim());
 				pixYPos = MathUtils.random(y, y+regionDim-this.level.getPixelDim());
-				Pixel tempPixel = new Pixel(pixXPos,pixYPos,this.level.getPixelDim(), new TextureRegion(texture));
+				Pixel tempPixel = new Pixel(pixXPos, pixYPos, this.level.getPixelDim(), new TextureRegion(texture));
 				tempPixel.setColorSpectrumFactor(this.spectrumFactor);
 				boolean insert = true;
 				for (int j = 0; j < occupied.size; j++) {
@@ -166,8 +170,8 @@ public class Engine {
 		this.changeVal = value;
 	}
 
-	public void setZoom(float zoom) {
-		level.setRatio(zoom);
+	public void levelTransition(float zoom) {
+		generateLevel(zoom*10, zoom*10, zoom);
 	}
 	
 	public boolean isLevelDone(){
