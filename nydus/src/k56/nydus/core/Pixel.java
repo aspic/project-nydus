@@ -25,13 +25,18 @@ public class Pixel {
 	
 	private TextureRegion region;
 	
-	public Pixel(float x, float y, float pixelDim, TextureRegion textureRegion){
+	public Pixel(float x, float y, float pixelDim, TextureRegion region) {
+		this(x, y, pixelDim, region, null);
 		this.color = new Color(MathUtils.random((int)1f/colorSpectrumFactor)/(1f/colorSpectrumFactor), MathUtils.random((int)1f/colorSpectrumFactor)/(1f/colorSpectrumFactor), MathUtils.random((int)1f/colorSpectrumFactor)/(1f/colorSpectrumFactor), 1);
+	}
+	
+	public Pixel(float x, float y, float pixelDim, TextureRegion textureRegion, Color color){
 		this.height = pixelDim;
 		this.width = pixelDim;
 		this.x = x;
 		this.y = y;
 		this.region = textureRegion;
+		this.color = color;
 	}
 
 	public void draw(SpriteBatch sb){
@@ -100,6 +105,10 @@ public class Pixel {
 	public void setColorandLock(Color color){
 		this.color = color;
 		this.lock = true;
+	}
+	
+	public void setColor(Color color) {
+		this.color = color;
 	}
 
 	public Color getColor() {
