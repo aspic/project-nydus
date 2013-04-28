@@ -11,10 +11,12 @@ public class Level {
 	private float height,width;
 	
 	private int numberOfPixels;
-	private float pixelHeight;
+	private float pixelDim;
 	
 	private Color color;
 	private float ratio;
+	
+	private float startingAmmo;
 	
 	/** Standard level, ratio of one */
 	public Level(float width, float height, TextureRegion region) {
@@ -60,16 +62,19 @@ public class Level {
 	}
 
 	public float getPixelDim() {
-		return pixelHeight;
+		return pixelDim;
 	}
 
 	public void setPixelHeight(float pixelHeight) {
-		this.pixelHeight = pixelHeight;
+		this.pixelDim = pixelHeight;
 	}
 
 	public Color getColor() {
-		// TODO Auto-generated method stub
 		return this.color;
+	}
+
+	public float getStartAmmo() {
+		return this.startingAmmo;
 	}
 	
 }

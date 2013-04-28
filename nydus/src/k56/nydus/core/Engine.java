@@ -21,6 +21,7 @@ public class Engine {
 	private Texture texture;
 	
 	private float colorThreshold = 0.05f;
+	private float ammo;
 
 	
 	public Engine( Camera camera ){
@@ -36,6 +37,7 @@ public class Engine {
 		this.level = new Level(10, 10, new TextureRegion(texture));
 		level.setColor(Color.DARK_GRAY);
 		level.setPixelHeight(1f);
+		this.ammo = level.getStartAmmo();
 		for (int i = 0; i < level.getWidth(); i+=regionDim) {
 			for (int j = 0; j < level.getHeight(); j+=regionDim) {
 				placePixel(i, j, regionDim);
@@ -53,7 +55,7 @@ public class Engine {
 				float pixXPos, pixYPos;
 				pixXPos = MathUtils.random(x, x+regionDim-this.level.getPixelDim());
 				pixYPos = MathUtils.random(y, y+regionDim-this.level.getPixelDim());
-				Pixel tempPixel = new Pixel(pixXPos,pixYPos, new TextureRegion(texture));
+				Pixel tempPixel = new Pixel(pixXPos,pixYPos,this.level.getPixelDim(), new TextureRegion(texture));
 				boolean insert = true;
 				for (int j = 0; j < occupied.size; j++) {
 					System.out.println("Test intersect.");
@@ -88,12 +90,9 @@ public class Engine {
 					System.out.println("Sub Color!");
 					break;
 				}
+				//Remove ammo when shot.
+				this.ammo--;
 			}
-			//Check to see if pixel is completed.
-			isCorrectColor(pixelList.get(i));
-		}
-		if(isLevelDone()){
-			//TODO: Insert what to do when level is done.
 		}
 	}
 	
@@ -129,6 +128,14 @@ public class Engine {
 		level.draw(sb);
 		for (int i = 0; i < pixelList.size; i++) {
 			pixelList.get(i).draw(sb);
+
+			//Check to see if pixel is completed.
+			isCorrectColor(pixelList.get(i));
+		}
+		
+		//Check logic for complete level.
+		if(isLevelDone()){
+			//TODO: Insert what to be done when level is complete.
 		}
 	}
 	
