@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
@@ -27,6 +28,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 public class Screen implements ApplicationListener, InputProcessor {
 	private int viewWidth = 10;
 	private int viewHeight = 10;
+	
+	private int startWidth = 10;
+	private int startHeight = 10;
 	
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
@@ -44,6 +48,8 @@ public class Screen implements ApplicationListener, InputProcessor {
 	private float duration = 1f;
 	private float runtime;
 	
+	private ParticleEffect effect;
+	
 	// User interface
 	private Stage stage;
 	private ColorTable[] pallette;
@@ -58,7 +64,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		region = new TextureRegion(new Texture(Gdx.files.internal("assets/test.png")));
 
-		engine = new Engine(camera);
+		engine = new Engine(startWidth, startHeight);
 
 		stage = new Stage(200, 200, true);
 		loadUI();
@@ -67,6 +73,11 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		camera.position.x = engine.getWidth()*0.5f;
 		camera.position.y = engine.getHeight()*0.5f;
+		
+		effect = new ParticleEffect();
+		effect.load(Gdx.files.internal("assets/particle/filler"), Gdx.files.internal("assets/"));
+		effect.setDuration(0);
+		effect.getEmitters().get(0).getTint().getColors()[0] = 0f;
 	}
 	
 	/** Load some minimalistic user interface */
@@ -114,8 +125,14 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
+
 		engine.render(batch);
+		batch.setColor(Color.BLUE);
+		effect.draw(batch, delta);
+		batch.setColor(Color.WHITE);
+
 		batch.end();
+		
 		
 		stage.draw();
 		
@@ -157,15 +174,6 @@ public class Screen implements ApplicationListener, InputProcessor {
 		case Keys.NUM_3:
 			selectColor(2);
 			break;
-		case Keys.Q:
-			action = Action.SUB;
-			actionLabel.setText("Subtract");
-			break;
-		case Keys.E:
-			action = Action.ADD;
-			actionLabel.setText("Add");
-			break;
-			
 		case Keys.SPACE:
 			lastZoom = zoom;
 			zoom *= 10f;
@@ -185,6 +193,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 				else pallette[j].deselect();
 			}
 			engine.setColor(pallette[selectedColor].getShootingValue());
+			setEffectColor(pallette[selectedColor].getShootingValue().getColor());
 		}
 	}
 
@@ -203,20 +212,32 @@ public class Screen implements ApplicationListener, InputProcessor {
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		mouse.set(screenX, screenY, 0);
 		camera.unproject(mouse);
-
+		effect.start();
 		touching = true;
+		
+		if(button == 0) {
+			action = Action.ADD;
+			actionLabel.setText("Add");
+		} else if(button == 1) {
+			action = Action.SUB;
+			actionLabel.setText("Subtract");
+		}
+		
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		touching = false;
+		effect.setDuration(0);
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
+		mouse.set(screenX, screenY, 0);
+		camera.unproject(mouse);
+		effect.setPosition(mouse.x, mouse.y);
 		return false;
 	}
 
@@ -224,8 +245,7 @@ public class Screen implements ApplicationListener, InputProcessor {
 	public boolean mouseMoved(int screenX, int screenY) {
 		mouse.set(screenX, screenY, 0);
 		camera.unproject(mouse);
-
-		System.out.println("Pointer at: " + mouse);
+		effect.setPosition(mouse.x, mouse.y);
 		return false;
 	}
 
@@ -264,5 +284,13 @@ public class Screen implements ApplicationListener, InputProcessor {
 		
 		if((dirY < 0 && diffY > (viewHeight*zoom - engine.getHeight())*0.5f)) panY += dirY*zoom;
 		else if(dirY > 0 && diffY < (viewHeight*zoom + engine.getHeight())*0.5f) panY += dirY*zoom;
+	}
+	
+	/** Le hack */
+	private void setEffectColor(Color color) {
+		if(effect == null) return;
+		effect.getEmitters().get(0).getTint().getColors()[0] = color.r;
+		effect.getEmitters().get(0).getTint().getColors()[1] = color.g;
+		effect.getEmitters().get(0).getTint().getColors()[2] = color.b;
 	}
 }
