@@ -20,7 +20,7 @@ public class Engine {
 	private Texture texture;
 
 	private Difficulty difficulty;
-	private float colorThreshold = 0.03f;
+	private float colorThreshold = 0.05f;
 	private float ammo;
 	private float ammoBonus;
 	private float spectrumFactor;
@@ -40,8 +40,8 @@ public class Engine {
 			pixelList.add(this.level.toPixel());
 			
 		}
-		
 		this.level = new Level(width, height, new TextureRegion(texture), dim, new Color(MathUtils.random(), MathUtils.random(), MathUtils.random(), 1f));
+		this.level.printColor();
 		
 		int regionDim = (int)(width*0.5f);
 		for (int i = 0; i < level.getWidth(); i+=regionDim) {
@@ -55,12 +55,11 @@ public class Engine {
 	
 	//Calculates the amount of ammo the player starts with.
 	private float calculateRequiredAmmo() {
-		//TODO: Find appropriate value;
 		float changeRequired = 0;
 		for (int i = 0; i < this.pixelList.size; i++) {
 			Pixel tmpPixel = this.pixelList.get(i);
 			Color diffColor = this.level.getColor().sub(tmpPixel.getColor());
-			changeRequired += diffColor.a+diffColor.g+diffColor.b;
+			changeRequired += diffColor.r+diffColor.g+diffColor.b;
 			System.out.println(changeRequired);
 		}
 		float ammoToUse = (changeRequired/this.changeVal)*ammoDiff;
@@ -92,6 +91,7 @@ public class Engine {
 				if(insert){
 					occupied.add(tempPixel);
 					pixelList.add(tempPixel);
+					tempPixel.printColor();
 				}
 			}
 		}
@@ -157,8 +157,9 @@ public class Engine {
 
 			//Check to see if pixel is completed.
 			if(isCorrectColor(pixelList.get(i))){
-				this.addAmmo();
 				pixelList.removeIndex(i);
+				this.addAmmo();
+				System.out.println("Pixel removed");
 			}
 		}
 		

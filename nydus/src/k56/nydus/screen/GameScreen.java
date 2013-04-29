@@ -127,7 +127,7 @@ public class GameScreen extends Screen implements InputProcessor {
 		batch.begin();
 
 		engine.render(batch);
-		batch.setColor(Color.BLUE);
+		//batch.setColor(Color.BLUE);
 		effect.draw(batch, delta);
 		batch.setColor(Color.WHITE);
 

@@ -65,4 +65,8 @@ public class Level {
 		return new Pixel(0, 0, width, background, this.color);
 	}
 	
+	public void printColor(){
+		System.out.println(this.color.r + " " + this.color.g + " " + this.color.b);
+	}
+	
 }

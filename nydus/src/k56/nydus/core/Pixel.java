@@ -105,6 +105,7 @@ public class Pixel {
 	public void setColorandLock(Color color){
 		this.color = color;
 		this.lock = true;
+		System.out.println("Pixel locked");
 	}
 	
 	public void setColor(Color color) {
@@ -114,6 +115,10 @@ public class Pixel {
 	public Color getColor() {
 		// TODO Auto-generated method stub
 		return this.color;
+	}
+	
+	public void printColor(){
+		System.out.println(this.color.r + " " + this.color.g + " " + this.color.b);
 	}
 	
 }
