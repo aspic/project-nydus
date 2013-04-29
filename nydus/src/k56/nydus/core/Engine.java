@@ -20,7 +20,8 @@ public class Engine {
 	private Texture texture;
 
 	private Difficulty difficulty;
-	private float colorThreshold = 0.05f;
+	
+	private float colorThreshold = 0.1f;
 	private float ammo;
 	private float ammoBonus;
 	private float spectrumFactor;
@@ -115,22 +116,22 @@ public class Engine {
 					break;
 				}
 				//Remove ammo when shot.
-				this.ammo-=this.changeVal;
+				this.ammo--;
+				checkPixel(tempPixel);
+				break;
 			}
 		}
 	}
 	
-	private boolean isCorrectColor(Pixel pixel) {
+	private void checkPixel(Pixel pixel) {
 		float r,g,b;
-		r = pixel.getColor().r - level.getColor().r;
-		g = pixel.getColor().g - level.getColor().g;
-		b = pixel.getColor().b - level.getColor().b;
+		
+		r = Math.abs(pixel.getColor().r - level.getColor().r);
+		g = Math.abs(pixel.getColor().g - level.getColor().g);
+		b = Math.abs(pixel.getColor().b - level.getColor().b);
 		if(r < this.colorThreshold && g < this.colorThreshold && b < this.colorThreshold){
-			System.out.println("Pixel correct! Move on!");
-			pixel.setColorandLock(level.getColor());
-			return true;
+			pixelList.removeValue(pixel, true);
 		}
-		return false;
 	}
 
 	public void setColor(ShootingValue color){
@@ -155,12 +156,6 @@ public class Engine {
 		for (int i = 0; i < pixelList.size; i++) {
 			pixelList.get(i).draw(sb);
 
-			//Check to see if pixel is completed.
-			if(isCorrectColor(pixelList.get(i))){
-				pixelList.removeIndex(i);
-				this.addAmmo();
-				System.out.println("Pixel removed");
-			}
 		}
 		
 		//Check logic for complete level.
