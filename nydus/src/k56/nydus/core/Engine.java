@@ -14,13 +14,17 @@ public class Engine {
 	private Array<Pixel> pixelList;
 	
 	//Value that color is changes when hit by the player.
-	private float changeVal = 0.01f;
 	private Color deltaColor; //Will be used to add to the pixel color.
-	private float ammo;
+	private ShootingValue selectedColor;
+	private float ammo,maxAmmo;
+	private boolean isRedLocked = false;
+	private boolean isBlueLocked = false;
+	private boolean isGreenLocked = false;
 
 	private Texture texture;
 
 	private Difficulty difficulty;
+	private Score score;
 	
 //	private float colorThreshold = 0.1f;
 //	private float ammoBonus;
@@ -29,6 +33,7 @@ public class Engine {
 	
 	public Engine(float width, float height){
 		this.difficulty = new Difficulty();
+		this.score = new Score();
 		this.difficulty.setSpectrumFactor(0.1f);
 		pixelList = new Array<Pixel>();
 		texture = new Texture(Gdx.files.internal("assets/test.png"));
@@ -52,6 +57,7 @@ public class Engine {
 			}
 		}
 		this.ammo = calculateRequiredAmmo();
+		this.maxAmmo = this.ammo;
 	}
 	
 	
@@ -68,7 +74,7 @@ public class Engine {
 			changeRequired += (r+g+b);
 			System.out.println(changeRequired);
 		}
-		float ammoToUse = (changeRequired/this.changeVal)*this.difficulty.getAmmoDiff();
+		float ammoToUse = (changeRequired/this.difficulty.getChangeVal())*this.difficulty.getAmmoDiff();
 		System.out.println("Ammo: " + ammoToUse);
 		return ammoToUse;
 	}
@@ -109,15 +115,13 @@ public class Engine {
 	public void clicked(float x, float y, Action action){
 		for (int i = 0; i < pixelList.size; i++) {
 			Pixel tempPixel = pixelList.get(i);
-			if (tempPixel.insidePixel(x, y) && ammo>0){
+			if (tempPixel.insidePixel(x, y) && ammo>0 && !isColorLocked(selectedColor)){
 				switch(action){
 				case ADD:
 					pixelList.get(i).addColor(this.deltaColor);
-					System.out.println("Add Color!");
 					break;
 				case SUB:
 					pixelList.get(i).subColor(this.deltaColor);
-					System.out.println("Sub Color!");
 					break;
 				}
 				//Remove ammo when shot.
@@ -134,23 +138,41 @@ public class Engine {
 		r = Math.abs(pixel.getColor().r - level.getColor().r);
 		g = Math.abs(pixel.getColor().g - level.getColor().g);
 		b = Math.abs(pixel.getColor().b - level.getColor().b);
+		
+		if(difficulty.isLockOnCorrectPartial()){
+			if (r < this.difficulty.getColorThreshold()) {
+				isRedLocked = true;
+			}
+			if (g < this.difficulty.getColorThreshold()) {
+				isGreenLocked = true;
+			}
+			if (b < this.difficulty.getColorThreshold()) {
+				isBlueLocked = true;
+			}
+		}
+		
+		System.out.println(r + " " + g + " " + b);
 		if(r < this.difficulty.getColorThreshold() && g < this.difficulty.getColorThreshold() && b < this.difficulty.getColorThreshold()){
 			pixelList.removeValue(pixel, true);
+			addAmmo();
 		}
 	}
 
 	public void setColor(ShootingValue color){
 		switch(color){
 		case RED:
-			this.deltaColor = new Color(changeVal, 0, 0, 1);
+			this.deltaColor = new Color(difficulty.getChangeVal(), 0, 0, 1);
+			this.selectedColor = ShootingValue.RED;
 			System.out.println("Set Red!");
 			break;
 		case GREEN:
-			this.deltaColor = new Color( 0, changeVal, 0, 1);
+			this.deltaColor = new Color( 0, difficulty.getChangeVal(), 0, 1);
+			this.selectedColor = ShootingValue.GREEN;
 			System.out.println("Set Green!");
 			break;
 		case BLUE:
-			this.deltaColor = new Color(0, 0, changeVal, 1);
+			this.deltaColor = new Color(0, 0, difficulty.getChangeVal(), 1);
+			this.selectedColor = ShootingValue.BLUE;
 			System.out.println("Set Blue!");
 			break;
 		}
@@ -160,7 +182,6 @@ public class Engine {
 		level.draw(sb);
 		for (int i = 0; i < pixelList.size; i++) {
 			pixelList.get(i).draw(sb);
-
 		}
 		
 		//Check logic for complete level.
@@ -170,6 +191,8 @@ public class Engine {
 		}
 		if(!canStillWin()){
 			System.out.println("Fail much!?");
+			score.calculateScore(ammo, difficulty);
+			System.out.println(score.getScore());
 			//TODO: Display game over/failure screen.
 		}
 	}
@@ -180,10 +203,6 @@ public class Engine {
 	
 	public float getHeight() {
 		return level.getHeight();
-	}
-	
-	public void setChangeVal(float value){
-		this.changeVal = value;
 	}
 
 	public void levelTransition(float zoom) {
@@ -202,6 +221,10 @@ public class Engine {
 		return true;
 	}
 
+	public float getAmmoRatio() {
+		return ammo/this.maxAmmo;
+	}
+	
 	private void addAmmo(){
 		this.ammo += this.difficulty.getAmmoBonus();
 	}
@@ -216,5 +239,23 @@ public class Engine {
 	
 	public void setDifficulty(Difficulty difficulty){
 		this.difficulty = difficulty;
+	}
+	
+	public boolean isColorLocked(ShootingValue color){
+		switch(color){
+		case RED:
+			if(isRedLocked)
+				return true;
+			break;
+		case GREEN:
+			if(isGreenLocked)
+				return true;
+			break;
+		case BLUE:
+			if(isBlueLocked)
+				return true;
+			break;
+		}
+		return false;
 	}
 }

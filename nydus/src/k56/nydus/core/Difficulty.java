@@ -2,19 +2,18 @@ package k56.nydus.core;
 
 public class Difficulty {
 	
-	private float colorThreshold = 0.03f;
-	private float ammoBonus;
-	private float spectrumFactor;
+	private float colorThreshold = 0.1f;
+	private float ammoBonus = 50;
+	private float spectrumFactor = 0.2f;
+	private float changeVal = 0.01f;
 	private int ammoDiff = 2;
-	private float time;
+	
+
+	private float time = 1000;
 	private boolean timed = false;
+	private boolean lockOnCorrectPartial = true;
 	
 	public Difficulty(){
-		this.colorThreshold = 0.03f;
-		this.ammoDiff = 5;
-		this.ammoBonus = 10*ammoDiff;
-		this.spectrumFactor = 0.2f;
-		this.time = 1000;
 	}
 	
 	public Difficulty(float colorThreshold, float ammoBonus, float spectrumFactro, float time, int ammo){
@@ -29,6 +28,13 @@ public class Difficulty {
 		return colorThreshold;
 	}
 
+	public float getChangeVal() {
+		return changeVal;
+	}
+	
+	public void setChangeVal(float changeVal) {
+		this.changeVal = changeVal;
+	}
 	public void setColorThreshold(float colorThreshold) {
 		this.colorThreshold = colorThreshold;
 	}
@@ -71,6 +77,14 @@ public class Difficulty {
 
 	public void setTimed(boolean timed) {
 		this.timed = timed;
+	}
+	
+	public boolean isLockOnCorrectPartial() {
+		return lockOnCorrectPartial;
+	}
+	
+	public void setLockOnCorrectPartial(boolean lockOnCorrectPartial) {
+		this.lockOnCorrectPartial = lockOnCorrectPartial;
 	}
 	
 	

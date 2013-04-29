@@ -20,9 +20,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class GameScreen extends Screen implements InputProcessor {
 	
@@ -55,6 +57,8 @@ public class GameScreen extends Screen implements InputProcessor {
 	private ColorTable[] pallette;
 	private int selectedColor;
 	private Label actionLabel;
+	private Image ammoBar;
+	private Table ammoTable;
 	
 	public GameScreen(Application application) {
 		super(application);
@@ -72,7 +76,6 @@ public class GameScreen extends Screen implements InputProcessor {
 
 		stage = new Stage(200, 200, true);
 		loadUI();
-		selectColor(0);
 		Gdx.input.setInputProcessor(new InputMultiplexer(this));
 		
 		camera.position.x = engine.getWidth()*0.5f;
@@ -81,7 +84,8 @@ public class GameScreen extends Screen implements InputProcessor {
 		effect = new ParticleEffect();
 		effect.load(Gdx.files.internal("assets/particle/filler"), Gdx.files.internal("assets/"));
 		effect.setDuration(0);
-		effect.getEmitters().get(0).getTint().getColors()[0] = 0f;
+		
+		selectColor(0);
 	}
 	
 	/** Load some minimalistic user interface */
@@ -113,6 +117,15 @@ public class GameScreen extends Screen implements InputProcessor {
 		
 		// Add to stage
 		stage.addActor(table);
+		
+		ammoTable = new Table();
+		ammoTable.setSize(stage.getWidth()*0.2f, stage.getHeight());
+		
+		TextureRegionDrawable drawable = new TextureRegionDrawable(region);
+		ammoBar = new Image(drawable);
+		
+		ammoTable.add(ammoBar).expand().fill();
+		stage.addActor(ammoTable);
 	}
 
 	@Override
@@ -147,6 +160,14 @@ public class GameScreen extends Screen implements InputProcessor {
 		
 		if(touching) {
 			engine.clicked(mouse.x, mouse.y, action);
+		}
+		
+		if(ammoTable != null) {
+			float height = stage.getHeight()*engine.getAmmoRatio();
+			if(height < ammoTable.getHeight()) {
+				ammoTable.setHeight(height);
+				ammoTable.layout();
+			}
 		}
 	}
 
@@ -186,7 +207,7 @@ public class GameScreen extends Screen implements InputProcessor {
 				else pallette[j].deselect();
 			}
 			engine.setColor(pallette[selectedColor].getShootingValue());
-			setEffectColor(pallette[selectedColor].getShootingValue().getColor());
+			setToolColor(pallette[selectedColor].getShootingValue().getColor());
 		}
 	}
 
@@ -280,8 +301,8 @@ public class GameScreen extends Screen implements InputProcessor {
 	}
 	
 	/** Le hack */
-	private void setEffectColor(Color color) {
-		if(effect == null) return;
+	private void setToolColor(Color color) {
+		ammoBar.setColor(color);
 		effect.getEmitters().get(0).getTint().getColors()[0] = color.r;
 		effect.getEmitters().get(0).getTint().getColors()[1] = color.g;
 		effect.getEmitters().get(0).getTint().getColors()[2] = color.b;
