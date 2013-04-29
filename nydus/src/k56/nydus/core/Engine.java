@@ -16,19 +16,20 @@ public class Engine {
 	//Value that color is changes when hit by the player.
 	private float changeVal = 0.01f;
 	private Color deltaColor; //Will be used to add to the pixel color.
+	private float ammo;
 
 	private Texture texture;
 
 	private Difficulty difficulty;
 	
-	private float colorThreshold = 0.1f;
-	private float ammo;
-	private float ammoBonus;
-	private float spectrumFactor;
-	private int ammoDiff = 2;
+//	private float colorThreshold = 0.1f;
+//	private float ammoBonus;
+//	private float spectrumFactor;
+//	private int ammoDiff = 2;
 	
 	public Engine(float width, float height){
-		spectrumFactor = 0.1f;
+		this.difficulty = new Difficulty();
+		this.difficulty.setSpectrumFactor(0.1f);
 		pixelList = new Array<Pixel>();
 		texture = new Texture(Gdx.files.internal("assets/test.png"));
 		generateLevel(width, height, 1f);
@@ -67,7 +68,7 @@ public class Engine {
 			changeRequired += (r+g+b);
 			System.out.println(changeRequired);
 		}
-		float ammoToUse = (changeRequired/this.changeVal)*ammoDiff;
+		float ammoToUse = (changeRequired/this.changeVal)*this.difficulty.getAmmoDiff();
 		System.out.println("Ammo: " + ammoToUse);
 		return ammoToUse;
 	}
@@ -83,7 +84,7 @@ public class Engine {
 				pixXPos = MathUtils.random(x, x+regionDim-this.level.getPixelDim());
 				pixYPos = MathUtils.random(y, y+regionDim-this.level.getPixelDim());
 				Pixel tempPixel = new Pixel(pixXPos, pixYPos, this.level.getPixelDim(), new TextureRegion(texture));
-				tempPixel.setColorSpectrumFactor(this.spectrumFactor);
+				tempPixel.setColorSpectrumFactor(this.difficulty.getSpectrumFactor());
 				boolean insert = true;
 				for (int j = 0; j < occupied.size; j++) {
 					System.out.println("Test intersect.");
@@ -133,7 +134,7 @@ public class Engine {
 		r = Math.abs(pixel.getColor().r - level.getColor().r);
 		g = Math.abs(pixel.getColor().g - level.getColor().g);
 		b = Math.abs(pixel.getColor().b - level.getColor().b);
-		if(r < this.colorThreshold && g < this.colorThreshold && b < this.colorThreshold){
+		if(r < this.difficulty.getColorThreshold() && g < this.difficulty.getColorThreshold() && b < this.difficulty.getColorThreshold()){
 			pixelList.removeValue(pixel, true);
 		}
 	}
@@ -201,16 +202,8 @@ public class Engine {
 		return true;
 	}
 
-	public float getAmmoBonus() {
-		return ammoBonus;
-	}
-
-	public void setAmmoBonus(float ammoBonus) {
-		this.ammoBonus = ammoBonus;
-	}
-	
 	private void addAmmo(){
-		this.ammo += this.ammoBonus;
+		this.ammo += this.difficulty.getAmmoBonus();
 	}
 	
 	public float getAmmo() {
@@ -219,14 +212,6 @@ public class Engine {
 	
 	public void setAmmo(float ammo) {
 		this.ammo = ammo;
-	}
-	
-	public float getSpectrumFactor() {
-		return spectrumFactor;
-	}
-	
-	public void setSpectrumFactor(float spectrumFactor) {
-		this.spectrumFactor = spectrumFactor;
 	}
 	
 	public void setDifficulty(Difficulty difficulty){
