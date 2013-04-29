@@ -2,6 +2,7 @@ package k56.nydus.screen;
 
 import k56.nydus.core.Action;
 import k56.nydus.core.Engine;
+import k56.nydus.core.GameListener;
 import k56.nydus.core.ShootingValue;
 import k56.nydus.ui.ColorTable;
 
@@ -26,7 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-public class GameScreen extends Screen implements InputProcessor {
+public class GameScreen extends Screen implements InputProcessor, GameListener {
 	
 	private int viewWidth = 10;
 	private int viewHeight = 10;
@@ -72,7 +73,7 @@ public class GameScreen extends Screen implements InputProcessor {
 		
 		region = new TextureRegion(new Texture(Gdx.files.internal("assets/test.png")));
 
-		engine = new Engine(startWidth, startHeight);
+		engine = new Engine(startWidth, startHeight, this);
 
 		stage = new Stage(200, 200, true);
 		loadUI();
@@ -188,11 +189,7 @@ public class GameScreen extends Screen implements InputProcessor {
 			selectColor(2);
 			break;
 		case Keys.SPACE:
-			lastZoom = zoom;
-			zoom *= 10f;
-			runtime = 0;
-			engine.levelTransition(zoom);
-			effect.getEmitters().get(0).getScale().getScaling()[0] = zoom;
+			finishedLevel();
 			break;
 		}
 		return false;
@@ -306,5 +303,14 @@ public class GameScreen extends Screen implements InputProcessor {
 		effect.getEmitters().get(0).getTint().getColors()[0] = color.r;
 		effect.getEmitters().get(0).getTint().getColors()[1] = color.g;
 		effect.getEmitters().get(0).getTint().getColors()[2] = color.b;
+	}
+
+	@Override
+	public void finishedLevel() {
+		lastZoom = zoom;
+		zoom *= 10f;
+		runtime = 0;
+		engine.levelTransition(zoom);
+		effect.getEmitters().get(0).getScale().getScaling()[0] = zoom;
 	}
 }

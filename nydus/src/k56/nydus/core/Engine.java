@@ -10,8 +10,11 @@ import com.badlogic.gdx.utils.Array;
 
 public class Engine {
 	
+	private GameListener gameListener;
+	
 	private Level level;
 	private Array<Pixel> pixelList;
+	private Array<Pixel> removedList; // Temporary list for removed pixels
 	
 	//Value that color is changes when hit by the player.
 	private float changeVal = 0.01f;
@@ -28,11 +31,13 @@ public class Engine {
 	private int maXAmmo = 1000;
 	private int ammoDiff = 2;
 	
-	public Engine(float width, float height){
+	public Engine(float width, float height, GameListener listener){
 		spectrumFactor = 0.1f;
 		pixelList = new Array<Pixel>();
+		removedList = new Array<Pixel>();
 		texture = new Texture(Gdx.files.internal("assets/test.png"));
 		generateLevel(width, height, 1f);
+		this.gameListener = listener;
 	}
 
 	private void generateLevel(float width, float height, float dim){
@@ -136,6 +141,7 @@ public class Engine {
 		b = Math.abs(pixel.getColor().b - level.getColor().b);
 		if(r < this.colorThreshold && g < this.colorThreshold && b < this.colorThreshold){
 			pixelList.removeValue(pixel, true);
+			removedList.add(pixel);
 		}
 	}
 
@@ -160,13 +166,18 @@ public class Engine {
 		level.draw(sb);
 		for (int i = 0; i < pixelList.size; i++) {
 			pixelList.get(i).draw(sb);
-
+		}
+		
+		for (int i = 0; i < removedList.size; i++) {
+			if(removedList.get(i).animateDone(sb, Gdx.graphics.getDeltaTime())) {
+				removedList.removeValue(removedList.get(i), true);
+				break;
+			}
 		}
 		
 		//Check logic for complete level.
 		if(isLevelDone()){
-			System.out.println("You won!");
-			//TODO: Insert what to be done when level is complete.
+			gameListener.finishedLevel();
 		}
 		if(!canStillWin()){
 			System.out.println("Fail much!?");

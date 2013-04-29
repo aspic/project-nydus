@@ -3,6 +3,7 @@ package k56.nydus.core;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 
 
@@ -12,6 +13,8 @@ public class Pixel {
 	private float x,y,height,width;
 	
 	private Color color;
+	private float time = 1f;
+	private float animateTime = 0;
 	
 	/***
 	 * Value that is used in pixel generation. Decides the available colors. A higher value the more contrast there will be in the color spectrum.
@@ -43,6 +46,16 @@ public class Pixel {
 		sb.setColor(color);
 		sb.draw(region, x, y, height, width);
 		sb.setColor(Color.WHITE);
+	}
+
+	/** Some "animation" upon completion */
+	public boolean animateDone(SpriteBatch sb, float delta) {
+		float value = Interpolation.swing.apply(0, 1f, animateTime/time);
+		sb.setColor(value, value, value, 1f);
+		sb.draw(region, x, y, height, width);
+		sb.setColor(Color.WHITE);
+		animateTime += delta;
+		return animateTime > time ? true : false;
 	}
 	
 	public void addColor(Color color){
@@ -120,5 +133,5 @@ public class Pixel {
 	public void printColor(){
 		System.out.println(this.color.r + " " + this.color.g + " " + this.color.b);
 	}
-	
+
 }
