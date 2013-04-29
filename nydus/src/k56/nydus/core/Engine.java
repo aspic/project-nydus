@@ -10,16 +10,16 @@ import com.badlogic.gdx.utils.Array;
 
 public class Engine {
 	
+	private GameListener gameListener;
+	
 	private Level level;
 	private Array<Pixel> pixelList;
+	private Array<Pixel> removedList; // Temporary list for removed pixels
 	
 	//Value that color is changes when hit by the player.
 	private Color deltaColor; //Will be used to add to the pixel color.
 	private ShootingValue selectedColor;
 	private float ammo,maxAmmo;
-	private boolean isRedLocked = false;
-	private boolean isBlueLocked = false;
-	private boolean isGreenLocked = false;
 
 	private Texture texture;
 
@@ -30,14 +30,16 @@ public class Engine {
 //	private float ammoBonus;
 //	private float spectrumFactor;
 //	private int ammoDiff = 2;
-	
-	public Engine(float width, float height){
+
+	public Engine(float width, float height, GameListener listener){
 		this.difficulty = new Difficulty();
 		this.score = new Score();
-		this.difficulty.setSpectrumFactor(0.1f);
+		this.difficulty.setSpectrumFactor(0.1f);	
 		pixelList = new Array<Pixel>();
+		removedList = new Array<Pixel>();
 		texture = new Texture(Gdx.files.internal("assets/test.png"));
 		generateLevel(width, height, 1f);
+		this.gameListener = listener;
 	}
 
 	private void generateLevel(float width, float height, float dim){
@@ -115,7 +117,7 @@ public class Engine {
 	public void clicked(float x, float y, Action action){
 		for (int i = 0; i < pixelList.size; i++) {
 			Pixel tempPixel = pixelList.get(i);
-			if (tempPixel.insidePixel(x, y) && ammo>0 && !isColorLocked(selectedColor)){
+			if (tempPixel.insidePixel(x, y) && ammo>0 && !isColorLocked(selectedColor, tempPixel)){
 				switch(action){
 				case ADD:
 					pixelList.get(i).addColor(this.deltaColor);
@@ -141,13 +143,13 @@ public class Engine {
 		
 		if(difficulty.isLockOnCorrectPartial()){
 			if (r < this.difficulty.getColorThreshold()) {
-				isRedLocked = true;
+				pixel.setRedLocked(true);
 			}
 			if (g < this.difficulty.getColorThreshold()) {
-				isGreenLocked = true;
+				pixel.setGreenLocked(true);
 			}
 			if (b < this.difficulty.getColorThreshold()) {
-				isBlueLocked = true;
+				pixel.setBlueLocked(true);
 			}
 		}
 		
@@ -155,6 +157,7 @@ public class Engine {
 		if(r < this.difficulty.getColorThreshold() && g < this.difficulty.getColorThreshold() && b < this.difficulty.getColorThreshold()){
 			pixelList.removeValue(pixel, true);
 			addAmmo();
+			removedList.add(pixel);
 		}
 	}
 
@@ -184,10 +187,16 @@ public class Engine {
 			pixelList.get(i).draw(sb);
 		}
 		
+		for (int i = 0; i < removedList.size; i++) {
+			if(removedList.get(i).animateDone(sb, Gdx.graphics.getDeltaTime())) {
+				removedList.removeValue(removedList.get(i), true);
+				break;
+			}
+		}
+		
 		//Check logic for complete level.
 		if(isLevelDone()){
-			System.out.println("You won!");
-			//TODO: Insert what to be done when level is complete.
+			gameListener.finishedLevel();
 		}
 		if(!canStillWin()){
 			System.out.println("Fail much!?");
@@ -241,18 +250,18 @@ public class Engine {
 		this.difficulty = difficulty;
 	}
 	
-	public boolean isColorLocked(ShootingValue color){
+	public boolean isColorLocked(ShootingValue color, Pixel pixel){
 		switch(color){
 		case RED:
-			if(isRedLocked)
+			if(pixel.isRedLocked())
 				return true;
 			break;
 		case GREEN:
-			if(isGreenLocked)
+			if(pixel.isGreenLocked())
 				return true;
 			break;
 		case BLUE:
-			if(isBlueLocked)
+			if(pixel.isBlueLocked())
 				return true;
 			break;
 		}

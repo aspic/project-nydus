@@ -3,6 +3,7 @@ package k56.nydus.core;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 
 
@@ -12,7 +13,37 @@ public class Pixel {
 	private float x,y,height,width;
 	
 	private Color color;
+	private float time = 1f;
+	private float animateTime = 0;
+
+	private boolean isRedLocked = false;
+	private boolean isBlueLocked = false;
+	private boolean isGreenLocked = false;
 	
+	public boolean isRedLocked() {
+		return isRedLocked;
+	}
+
+	public void setRedLocked(boolean isRedLocked) {
+		this.isRedLocked = isRedLocked;
+	}
+
+	public boolean isBlueLocked() {
+		return isBlueLocked;
+	}
+
+	public void setBlueLocked(boolean isBlueLocked) {
+		this.isBlueLocked = isBlueLocked;
+	}
+
+	public boolean isGreenLocked() {
+		return isGreenLocked;
+	}
+
+	public void setGreenLocked(boolean isGreenLocked) {
+		this.isGreenLocked = isGreenLocked;
+	}
+
 	/***
 	 * Value that is used in pixel generation. Decides the available colors. A higher value the more contrast there will be in the color spectrum.
 	 * Is used by the Pixel constructor (at the moment) to set it's tint color.
@@ -43,6 +74,16 @@ public class Pixel {
 		sb.setColor(color);
 		sb.draw(region, x, y, height, width);
 		sb.setColor(Color.WHITE);
+	}
+
+	/** Some "animation" upon completion */
+	public boolean animateDone(SpriteBatch sb, float delta) {
+		float value = Interpolation.swing.apply(0, 1f, animateTime/time);
+		sb.setColor(value, value, value, 1f);
+		sb.draw(region, x, y, height, width);
+		sb.setColor(Color.WHITE);
+		animateTime += delta;
+		return animateTime > time ? true : false;
 	}
 	
 	public void addColor(Color color){
@@ -120,5 +161,5 @@ public class Pixel {
 	public void printColor(){
 		System.out.println(this.color.r + " " + this.color.g + " " + this.color.b);
 	}
-	
+
 }
