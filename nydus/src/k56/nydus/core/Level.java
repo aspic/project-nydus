@@ -21,7 +21,6 @@ public class Level {
 	public Level (float width, float height, TextureRegion region, float dimension, Color color){
 		this.width = width;
 		this.height = height;
-		this.color = Color.PINK;
 		this.background = region;
 		this.pixelDim = dimension;
 		this.color = color;

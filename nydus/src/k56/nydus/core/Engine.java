@@ -18,11 +18,13 @@ public class Engine {
 	private Color deltaColor; //Will be used to add to the pixel color.
 
 	private Texture texture;
-	
+
+	private Difficulty difficulty;
 	private float colorThreshold = 0.03f;
 	private float ammo;
 	private float ammoBonus;
 	private float spectrumFactor;
+	private int ammoDiff = 2;
 	
 	public Engine(float width, float height){
 		spectrumFactor = 0.1f;
@@ -59,8 +61,11 @@ public class Engine {
 			Pixel tmpPixel = this.pixelList.get(i);
 			Color diffColor = this.level.getColor().sub(tmpPixel.getColor());
 			changeRequired += diffColor.a+diffColor.g+diffColor.b;
+			System.out.println(changeRequired);
 		}
-		return MathUtils.ceil(changeRequired/this.changeVal);
+		float ammoToUse = (changeRequired/this.changeVal)*ammoDiff;
+		System.out.println("Ammo: " + ammoToUse);
+		return ammoToUse;
 	}
 
 	private void placePixel(float x, float y, int regionDim){
@@ -110,7 +115,7 @@ public class Engine {
 					break;
 				}
 				//Remove ammo when shot.
-				this.ammo--;
+				this.ammo-=this.changeVal;
 			}
 		}
 	}
@@ -152,6 +157,7 @@ public class Engine {
 
 			//Check to see if pixel is completed.
 			if(isCorrectColor(pixelList.get(i))){
+				this.addAmmo();
 				pixelList.removeIndex(i);
 			}
 		}
@@ -221,5 +227,9 @@ public class Engine {
 	
 	public void setSpectrumFactor(float spectrumFactor) {
 		this.spectrumFactor = spectrumFactor;
+	}
+	
+	public void setDifficulty(Difficulty difficulty){
+		this.difficulty = difficulty;
 	}
 }
