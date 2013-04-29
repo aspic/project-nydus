@@ -21,7 +21,6 @@ public class Level {
 	public Level (float width, float height, TextureRegion region, float dimension, Color color){
 		this.width = width;
 		this.height = height;
-		this.color = Color.PINK;
 		this.background = region;
 		this.pixelDim = dimension;
 		this.color = color;
@@ -64,6 +63,10 @@ public class Level {
 	/** Returns this level as a new pixel */
 	public Pixel toPixel() {
 		return new Pixel(0, 0, width, background, this.color);
+	}
+	
+	public void printColor(){
+		System.out.println(this.color.r + " " + this.color.g + " " + this.color.b);
 	}
 	
 }

@@ -16,6 +16,6 @@ TODO:
 * End game criteria?
 * Improve particles!
 * Sounds?
-
+* Find out how to best implement score and difficulty
 
 DONE:

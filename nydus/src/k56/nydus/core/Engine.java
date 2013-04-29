@@ -18,11 +18,15 @@ public class Engine {
 	private Color deltaColor; //Will be used to add to the pixel color.
 
 	private Texture texture;
+
+	private Difficulty difficulty;
 	
 	private float colorThreshold = 0.1f;
 	private float ammo;
+	private float ammoBonus;
 	private float spectrumFactor;
 	private int maXAmmo = 1000;
+	private int ammoDiff = 2;
 	
 	public Engine(float width, float height){
 		spectrumFactor = 0.1f;
@@ -38,8 +42,8 @@ public class Engine {
 			pixelList.add(this.level.toPixel());
 			
 		}
-		
 		this.level = new Level(width, height, new TextureRegion(texture), dim, new Color(MathUtils.random(), MathUtils.random(), MathUtils.random(), 1f));
+		this.level.printColor();
 		
 		int regionDim = (int)(width*0.5f);
 		for (int i = 0; i < level.getWidth(); i+=regionDim) {
@@ -47,18 +51,26 @@ public class Engine {
 				placePixel(i, j, regionDim);
 			}
 		}
-		this.ammo = calculateAmmo();
+		this.ammo = calculateRequiredAmmo();
 	}
 	
 	
 	//Calculates the amount of ammo the player starts with.
-	private float calculateAmmo() {
-		//TODO: Find appropriate value;
-		return 1000;
-	}
-	
-	private void addAmmo(float ammo){
-		this.ammo += ammo;
+	private float calculateRequiredAmmo() {
+		float changeRequired = 0;
+		float r,g,b;
+		
+		for (int i = 0; i < this.pixelList.size; i++) {
+			Pixel tmpPixel = this.pixelList.get(i);
+			r = Math.abs(tmpPixel.getColor().r - level.getColor().r);
+			g = Math.abs(tmpPixel.getColor().g - level.getColor().g);
+			b = Math.abs(tmpPixel.getColor().b - level.getColor().b);
+			changeRequired += (r+g+b);
+			System.out.println(changeRequired);
+		}
+		float ammoToUse = (changeRequired/this.changeVal)*ammoDiff;
+		System.out.println("Ammo: " + ammoToUse);
+		return ammoToUse;
 	}
 
 	private void placePixel(float x, float y, int regionDim){
@@ -85,6 +97,7 @@ public class Engine {
 				if(insert){
 					occupied.add(tempPixel);
 					pixelList.add(tempPixel);
+					tempPixel.printColor();
 				}
 			}
 		}
@@ -147,13 +160,16 @@ public class Engine {
 		level.draw(sb);
 		for (int i = 0; i < pixelList.size; i++) {
 			pixelList.get(i).draw(sb);
+
 		}
 		
 		//Check logic for complete level.
 		if(isLevelDone()){
+			System.out.println("You won!");
 			//TODO: Insert what to be done when level is complete.
 		}
 		if(!canStillWin()){
+			System.out.println("Fail much!?");
 			//TODO: Display game over/failure screen.
 		}
 	}
@@ -175,14 +191,7 @@ public class Engine {
 	}
 	
 	public boolean isLevelDone(){
-		int counter = 0;
-		for (int i = 0; i < pixelList.size; i++) {
-			if(pixelList.get(i).getColor() == this.level.getColor()){
-				counter++;
-			}
-		}
-		if (counter == pixelList.size){
-			System.out.println("Level Done!");
+		if(pixelList.size<= 0){
 			return true;
 		}
 		return false;
@@ -195,5 +204,37 @@ public class Engine {
 
 	public float getAmmoRatio() {
 		return ammo/maXAmmo;
+	}
+	
+	public float getAmmoBonus() {
+		return ammoBonus;
+	}
+
+	public void setAmmoBonus(float ammoBonus) {
+		this.ammoBonus = ammoBonus;
+	}
+	
+	private void addAmmo(){
+		this.ammo += this.ammoBonus;
+	}
+	
+	public float getAmmo() {
+		return ammo;
+	}
+	
+	public void setAmmo(float ammo) {
+		this.ammo = ammo;
+	}
+	
+	public float getSpectrumFactor() {
+		return spectrumFactor;
+	}
+	
+	public void setSpectrumFactor(float spectrumFactor) {
+		this.spectrumFactor = spectrumFactor;
+	}
+	
+	public void setDifficulty(Difficulty difficulty){
+		this.difficulty = difficulty;
 	}
 }
