@@ -57,10 +57,14 @@ public class Engine {
 	//Calculates the amount of ammo the player starts with.
 	private float calculateRequiredAmmo() {
 		float changeRequired = 0;
+		float r,g,b;
+		
 		for (int i = 0; i < this.pixelList.size; i++) {
 			Pixel tmpPixel = this.pixelList.get(i);
-			Color diffColor = this.level.getColor().sub(tmpPixel.getColor());
-			changeRequired += diffColor.r+diffColor.g+diffColor.b;
+			r = Math.abs(tmpPixel.getColor().r - level.getColor().r);
+			g = Math.abs(tmpPixel.getColor().g - level.getColor().g);
+			b = Math.abs(tmpPixel.getColor().b - level.getColor().b);
+			changeRequired += (r+g+b);
 			System.out.println(changeRequired);
 		}
 		float ammoToUse = (changeRequired/this.changeVal)*ammoDiff;
