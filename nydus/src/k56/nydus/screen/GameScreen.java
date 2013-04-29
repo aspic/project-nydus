@@ -171,6 +171,7 @@ public class GameScreen extends Screen implements InputProcessor {
 			zoom *= 10f;
 			runtime = 0;
 			engine.levelTransition(zoom);
+			effect.getEmitters().get(0).getScale().getScaling()[0] = zoom;
 			break;
 		}
 		return false;

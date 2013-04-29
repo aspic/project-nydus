@@ -8,7 +8,7 @@ public class Application implements ApplicationListener {
 	
 	@Override
 	public void create() {
-		currentScreen = new GameScreen(this);
+		currentScreen = new MenuScreen(this);
 		currentScreen.create();
 	}
 
