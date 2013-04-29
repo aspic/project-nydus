@@ -22,6 +22,7 @@ public class Engine {
 	private float colorThreshold = 0.1f;
 	private float ammo;
 	private float spectrumFactor;
+	private int maXAmmo = 1000;
 	
 	public Engine(float width, float height){
 		spectrumFactor = 0.1f;
@@ -190,5 +191,9 @@ public class Engine {
 	private boolean canStillWin(){
 		//TODO: Check if there is enough ammo to complete the level.
 		return true;
+	}
+
+	public float getAmmoRatio() {
+		return ammo/maXAmmo;
 	}
 }
