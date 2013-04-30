@@ -29,6 +29,7 @@ public class MenuScreen extends Screen {
 	@Override
 	public void create() {
 		// Create components
+		
 		TextureRegionDrawable drawable = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("assets/test.png"))));
 		TextButtonStyle style = new TextButtonStyle(drawable, drawable, drawable, new BitmapFont());
 		final TextButton playButton = new TextButton("Play", style);
